@@ -1,0 +1,48 @@
+Basic Variables
+- Stock Symbol
+- Begin/End Dates
+- Frequency (Number of Periods)
+- Simple or Log Rates
+
+Basic Output
+- similar to Yahoo's auto stuff
+
+Periodic Mean Rates of Return
+- Standard - range
+- Geometric - range
+
+
+Periodic Standard Deviation
+--- uh? compared to SPY/SPX?
+
+
+Annualized Means and Standard Deviation
+- ?
+- std dev from nonannualized?
+
+
+Ratio of Annualized Return adjusted rate to annualized risk (Sharpe Ratio)
+- annualized adjusted return rate / std deviation (? annualized, what?) 
+
+
+Relative Strenth Index (RSI) + OVERBOUGHT/OVERSOLD lines
+- input: # of periods (default: 14)
+
+
+Simple Moving Average (SMA)
+- period
+
+
+Exponential Moving Average (EMA)
+- period
+
+
+Moving Average Convergence Divergence
+- slow period
+- fast period
+- signal period
+
+
+Bollinger Bands
+- period
+- deviation
