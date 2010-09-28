@@ -1,26 +1,59 @@
-function getConstituents(symbol) {
-   var url = "http://uk.old.finance.yahoo.com/d/quotes.csv?s=" + symbol + "&f=s&e=.csv";
-   var constituents;
+var constituents = [];
 
-   $.jsonp(url, function(data) {
-      constituents = data;
-   });
+var blocker = {
+  block : function() {
+    $blockelem = $(document.createElement('div')).html("Test").css("background-color", "black").css("width", "100%").css("height", "100%").show();
+    $("body").append($blockelem);
+  },
 
-   return constituents;
+  unblock : function() {
+    $blockelem.remove();
+  },
 }
 
-function getConstituentName(symbol) {
-  var query = "select CompanyName from yahoo.finance.stocks where symbol = " + symbol;
-  var rdata;
-  $.yql(query, { username: "cmickens", repository: "jquery-yql" }, function(data) {
-    rdata = data;
-  });
+var init = {
+  init : function(indexSymbol) {
+    blocker.block();
+    init.loadConstituents(indexSymbol);
+  },
 
-  return rdata;
+  loadConstituents : function(indexSymbol) {
+    var url = "http://uk.old.finance.yahoo.com/d/quotes.csv?s=" + indexSymbol + "&f=s&e=.csv";
+    $.jsonp(url, function(symbols) {
+      var symbolsArray = symbols.split('\n');
+      init.loadConstituentNames(symbolsArray);
+    });
+  },
+
+  /*
+    setup a batching and recrusive thingy-majig here.
+  */
+  loadConstituentNames : function(symbols) {
+    var symbolsArr = [];
+    for(var s in symbols) {
+      symbolsArr.push("\"" + symbols[s].trim() + "\"");
+    }
+
+    var query = "select symbol, CompanyName from yahoo.finance.stocks where symbol in (" + symbolsArr.join(",") + ")";
+
+    $.yql(query, {}, function(data) {
+      console.log(data);
+      // persist to global `constituents`
+      init.finish();
+    });
+  },
+
+  finish : function() {
+    blocker.unblock();
+  }
+}
+
+var grapher = {
+  graph : function() {
+    alert("hello grapher world");
+  }
 }
 
 $(document).ready(function() {
-  //var constituentSymbols = getConstituents("@^GSPC");
-  //console.log(constituentSymbols);
-  console.log(getConstituentName("MSFT"));
+  init.init("@^GSPC");
 });
