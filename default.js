@@ -1,9 +1,15 @@
-var constituents = [];
+var appdata = {
+	constituents: [],
+}
 
 var blocker = {
   block : function() {
     $blockelem = $(document.createElement('div')).html("Test").css("background-color", "black").css("width", "100%").css("height", "100%").show();
     $("body").append($blockelem);
+  },
+
+  message : function(msg) {
+     $blockelem.html(msg);
   },
 
   unblock : function() {
@@ -13,38 +19,54 @@ var blocker = {
 
 var init = {
   init : function(indexSymbol) {
-    blocker.block();
+    blocker.block("Loading initial data from Yahoo!");
     init.loadConstituents(indexSymbol);
   },
 
   loadConstituents : function(indexSymbol) {
     var url = "http://uk.old.finance.yahoo.com/d/quotes.csv?s=" + indexSymbol + "&f=s&e=.csv";
-    $.jsonp(url, function(symbols) {
-      var symbolsArray = symbols.split('\n');
-      init.loadConstituentNames(symbolsArray);
-    });
-  },
-
-  /*
-    setup a batching and recrusive thingy-majig here.
-  */
-  loadConstituentNames : function(symbols) {
-    var symbolsArr = [];
-    for(var s in symbols) {
-      symbolsArr.push("\"" + symbols[s].trim() + "\"");
-    }
-
-    var query = "select symbol, CompanyName from yahoo.finance.stocks where symbol in (" + symbolsArr.join(",") + ")";
-
-    $.yql(query, {}, function(data) {
-      console.log(data);
-      // persist to global `constituents`
+    $.jsonpProxy(url, function(symbols) {
+      symbols = symbols.split('\n');
+      symbols = $.grep(symbols, function(value) { return value != ""; })
+      for(var i=0; i<symbols.length; i++) {
+        if(symbols[i].trim() != "") {
+          appdata.constituents.push(symbols[i].trim());
+        }
+      }
+      console.log(appdata.constituents);
       init.finish();
     });
   },
 
   finish : function() {
+    blocker.message("Done!");
     blocker.unblock();
+  }
+}
+
+var lookuper = {
+  lookup : function(symbol) {
+    var potentials = [];
+    var url = "http://d.yimg.com/autoc.finance.yahoo.com/autoc?query="+symbol+"&callback=YAHOO.Finance.SymbolSuggest.ssCallback";
+    $.jsonpRewrap(url, function(data) {
+      for(var i=0; i<data.ResultSet.Result.length; i++) {
+        var result = data.ResultSet.Result[i];
+        if(result.exch == "NMS") {
+          potentials.push(result);
+          console.log(result);
+        }
+      }
+      // now setup autocomplete on the text box!
+    });
+  }
+}
+
+var yahoo = {
+  historicalPrices : function(symbol) {
+    var url = "http://ichart.finance.yahoo.com/table.csv?s="+symbol+"&g=d";
+    $.jsonpProxy(url, function(data) {
+      console.log(data);
+    });
   }
 }
 
@@ -56,4 +78,7 @@ var grapher = {
 
 $(document).ready(function() {
   init.init("@^GSPC");
+  $("#symbol_lookup_box").keyup(function() {
+    lookuper.lookup( $("#symbol_lookup_box").val() );
+  });
 });
