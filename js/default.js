@@ -126,9 +126,9 @@ $(document).ready(function() {
   init.init("@^GSPC");
   var avail = [ "microsoft", "google" ];
   $("input#symbolLookupBox")
-    .keyup(function() {
+    /*.keyup(function() {
       lookuper.lookup( $("#symbolLookupBox").val() );
-    })
+    })*/
     .css("width", "500px")
     .autocomplete({
       //source: potentials,
