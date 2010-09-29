@@ -1,5 +1,6 @@
 var appdata = {
-	constituents: [],
+  constituents: [],
+  historicalData: [],
 }
 
 var blocker = {
@@ -62,11 +63,56 @@ var lookuper = {
 }
 
 var yahoo = {
-  historicalPrices : function(symbol) {
-    var url = "http://ichart.finance.yahoo.com/table.csv?s="+symbol+"&g=d";
+  historicalPrices : function(symbol, frequency) {
+    var g;
+    if(frequency == "daily") {
+      g="d";
+    } else if(frequency == "weekly") {
+      g="w";
+    } else if(frequency == "monthly") {
+      g="m";
+    }
+
+    var url = "http://ichart.finance.yahoo.com/table.csv?s="+symbol+"&g="+g;
+
     $.jsonpProxy(url, function(data) {
-      console.log(data);
+      var rows = data.split("\n");
+      appdata.historicalData = new Array();
+      for(var i=1; i<rows.length-1; i++) {
+        var cols = rows[i].split(",");
+        appdata.historicalData.push(new Array(cols[0], cols[6]));
+      }
+      //console.log(appdata.historicalData);
     });
+  }
+}
+
+var tabler = {
+  showTable : function() {
+    console.log("attempting to render the table");
+    var table = $(document.createElement("table"))
+    .attr("cellpadding","0")
+    .attr("cellspacing","0")
+    .attr("border","0")
+    .attr("class","display")
+    .attr("id","pricesTable");
+
+    // add to the dom
+    $("#pricesTableContainer").append(table);
+    console.log("added #pricesTable to #pricesTableContainer");
+
+    $("#pricesTable").dataTable( {
+      "aaData": appdata.historicalData,
+      "aoColumns": [
+        { "sTitle": "Date" },
+        { "sTitle": "Adjusted Closing Price" },
+      ],
+      "bJQueryUI": true,
+      "sPaginationType": "full_numbers",
+    });
+    
+    console.log("Done constructing datatables table.");
+    return "I'm so cool!";
   }
 }
 
