@@ -132,5 +132,6 @@ $(document).ready(function() {
     .css("width", "500px")
     .autocomplete({
       //source: potentials,
+      source: ["microsoft", "google"]
     });
 });
