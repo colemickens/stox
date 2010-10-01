@@ -131,7 +131,7 @@
 	}
 
 	//CORRECT - SAVE FOR MINOR ERROR PROPAGATED THROUGH EMA
-	function movingAverageConvergenceDiveregence(periods1, periods2){
+	function movingAverageConvergenceDivergence(periods1, periods2){
 		//default to 12 day and 26 day
 		//periods1 < periods2
 		//histogram is different than this calculation
