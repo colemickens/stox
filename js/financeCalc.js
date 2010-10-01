@@ -1,5 +1,5 @@
 
-	//will probably need to convert period information to a time & date value for reference
+	
 	function meanRateOfReturn(periods){
 		var current = appdata.historicalData.length-1;
 		var Vf = appdata.historicalData[current].price;
@@ -12,6 +12,7 @@
 		return meanRoR;
 	}
 
+	//CORRECT
 	function standardDeviation(periods){
 		var current = appdata.historicalData.length-1;
 		var sum = 0;
@@ -59,27 +60,50 @@
 	//also, stockcharts mentions that doing continuous calculations of this is slightly different
 	//also, also, RSI > 70 is overbought, RSI < 30 is oversold
 	//default of 14 periods
+	
 		var current = appdata.historicalData.length-1;
-		var AverageGain = 0;
-		var AverageLoss = 0;
+		var InitialGain = 0;
+		var InitialLoss = 0;
 		
-		for(var i = current-periods-1; i<current-1; i++){
-			var change = appdata.historicalData[i].price-appdata.historicalData[i-1].price;
+		for(var i = periods; i>0; i--){
+			var change = appdata.historicalData[i].price - appdata.historicalData[i-1].price;
 			if(change >= 0){
-				AverageGain += change;
+				InitialGain += change;
 			}else{
-				AverageLoss += change;
+				InitialLoss += Math.abs(change);
 			}
 		}
-		AverageGain /= 14;
-		AverageLoss /= 14;
 		
-		var RS = AverageGain/Math.abs(AverageLoss);
+		var AverageGain = InitialGain/periods;
+		var AverageLoss = InitialLoss/periods;
+		console.log("InitialAvgGain: " + AverageGain);
+		console.log("InitialAvgLoss: " + AverageLoss);
+		
+		for(var i = periods+1; i<=current; i++){
+		
+			var currentGain = 0;
+			var currentLoss = 0;
+		
+				var change = appdata.historicalData[i].price - appdata.historicalData[i-1].price;
+				if(change >= 0){
+					currentGain += change;
+				}else{
+					currentLoss += Math.abs(change);
+				}
+			
+			AverageGain = ((AverageGain*(periods-1))+currentGain)/periods;
+			AverageLoss = ((AverageLoss*(periods-1))+currentGain)/periods;
+			console.log("AvgGain: " + AverageGain);
+			console.log("AvgLoss: " + AverageLoss);
+
+		}
+		var RS = AverageGain/AverageLoss;
 		console.log(RS);
-		var RSI = 100-(100/(1+RS));
+		var RSI = 100 - (100/(1+RS));
 		return RSI;
 	}
 
+	//CORRECT
 	function simpleMovingAverage(periods, historic){
 		var sum = 0;
 		var current = appdata.historicalData.length-1;
@@ -94,10 +118,10 @@
 		return SMA;
 	}
 	
+	//CORRECT
 	function exponentialMovingAverage(periods){
 		var current = appdata.historicalData.length-1;
-		var EMAprevious = simpleMovingAverage(periods, current-periods-1);
-		console.log(EMAprevious);
+		var EMAprevious = simpleMovingAverage(periods, current-periods);
 		var multiplier = 2/(periods+1);
 		for(var i = current-periods; i<current; i++){
 			EMAprevious = ((appdata.historicalData[i].price-EMAprevious)*multiplier)+EMAprevious;
@@ -106,6 +130,7 @@
 		return EMA;	
 	}
 
+	//CORRECT - SAVE FOR MINOR ERROR PROPAGATED THROUGH EMA
 	function movingAverageConvergenceDiveregence(periods1, periods2){
 		//default to 12 day and 26 day
 		//periods1 < periods2
