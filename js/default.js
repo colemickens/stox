@@ -1,6 +1,14 @@
+/* TODO
+
+ - fix flot. plotting msft shifted/scaled down
+ - reduce redundancy in using basicHistoricalData / historicalData
+
+*/
+
 var appdata = {
   constituents: [],
   historicalData: [],
+  basicHistoricalData: [],
   getPrices : function() {
     var ret = new Array();
     for(var i=0; i<appdata.historicalData.length; i++) {
@@ -103,8 +111,13 @@ var yahoo = {
       appdata.historicalData = new Array();
       for(var i=1; i<rows.length-1; i++) {
         var cols = rows[i].split(",");
-        var entry = new Array( Date.parse(cols[0]), cols[6] );
+        var entry = {
+          date: Date.parse(cols[0]),
+          price: parseFloat(cols[6]), 
+        };
+        var basicEntry = new Array(Date.parse(cols[0]), parseFloat(cols[6]));
         appdata.historicalData.push(entry);
+        appdata.basicHistoricalData.push(basicEntry);
       }
       grapher.showGraph();
       calculator.doCalcs();
@@ -120,7 +133,6 @@ var calculator = {
 
 var tabler = {
   showTable : function() {
-    console.log("attempting to render the table");
     var table = $(document.createElement("table"))
     .attr("cellpadding","0")
     .attr("cellspacing","0")
@@ -130,7 +142,6 @@ var tabler = {
 
     // add to the dom
     $("#pricesTableContainer").append(table);
-    console.log("added #pricesTable to #pricesTableContainer");
 
     $("#pricesTable").dataTable( {
       "aaData": appdata.historicalData,
@@ -142,7 +153,6 @@ var tabler = {
       "sPaginationType": "full_numbers",
     });
     
-    console.log("Done constructing datatables table.");
   }
 }
 
@@ -150,7 +160,7 @@ var grapher = {
   showGraph : function() {
     $.plot(
       $("#graphHolder"),
-      [appdata.historicalData,],
+      [appdata.basicHistoricalData,],
       {
         xaxis: {
           mode: "time",
