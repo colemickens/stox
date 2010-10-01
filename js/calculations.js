@@ -82,7 +82,7 @@ var calculations = {
     }
   },
   annualizedMean : {
-    title: "Annualized Mean",
+    title: "Annualized Mean Rate of Return",
     options: { periods: 10 },
     calculation: function(data) {
       try {
