@@ -30,7 +30,7 @@
 	
 	
 	function annualizedMean(periods){
-		var frequency = appdata.getFrequency;
+		var frequency = appdata.getFrequency();
 		var current = appdata.historicalData.length-1;
 		
 		var product = 1;
@@ -48,7 +48,7 @@
 	
 	//CORRECT
 	function annualizedStandardDeviation(periods){
-		var frequency = appdata.getFrequency;
+		var frequency = appdata.getFrequency();
 		var annualSTDV = standardDeviation(periods)*Math.sqrt(frequency/periods);
 		return annualSTDV;
 	}
