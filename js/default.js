@@ -1,36 +1,49 @@
 /* TODO
 
- - fix flot. plotting msft shifted/scaled down
- - reduce redundancy in using basicHistoricalData / historicalData
-
+ - pretty/basicHistoricalData / historicalData
+ - fix table rendering (you know, to make it not look like shit and such
+ - redraw flot on resize window
+ - sizing/positioning
+ - calc configs, etc
+ - load default date (from stock)
+ - disable dates before it
+ - frequency, only let them select frequency in start date picker
 */
 
 var appdata = {
   constituents: [],
   historicalData: [],
   basicHistoricalData: [],
-  getPrices : function() {
-    var ret = new Array();
-    for(var i=0; i<appdata.historicalData.length; i++) {
-      var entry = [ i, appdata.historicalData[i][1] ];
-      ret.push(entry);
-    }
-    return ret;
-  }
+  prettyHistoricalData: [],
+  symbol: "",
+  getFrequency : function() {
+    if( $("#frequencySelect").val() == "daily") { return 365; }
+    if( $("#frequencySelect").val() == "weekly") { return 52; }
+    if( $("#frequencySelect").val() == "monthly") { return 12; }
+    else { return 0; }
+  },
 }
 
 var blocker = {
-  block : function() {
-    $blockelem = $(document.createElement('div')).html("Test").css("background-color", "black").css("width", "100%").css("height", "100%").show();
-    $("body").append($blockelem);
+  block : function(message) {
+    dialog = $(document.createElement('div'));
+    dialog.attr("id", "blockerModalDialog");
+    dialog.attr("title", "Loading");
+    dialog.html(message);
+    
+    $("body").append(dialog);
+    dialog.dialog({
+      height: 140,
+      modal: true,
+    });
   },
 
   message : function(msg) {
-     $blockelem.html(msg);
+     dialog.html(msg);
   },
 
   unblock : function() {
-    $blockelem.remove();
+    dialog.remove();
   },
 }
 
@@ -83,7 +96,8 @@ var lookuper = {
         source: potentials,
         select: function(event, ui) {
           selectedLabel = ui.item.label;
-          yahoo.historicalPrices(ui.item.value, "d");
+          appdata.symbol = ui.item.value;
+          yahoo.historicalPrices();
         },
         close: function(event, ui) {
           $("#symbolLookupBox").val(selectedLabel);
@@ -94,21 +108,34 @@ var lookuper = {
 }
 
 var yahoo = {
-  historicalPrices : function(symbol, frequency) {
-    var g;
-    if(frequency == "daily") {
+  historicalPrices : function() {
+    var symbol = appdata.symbol;
+    var frequency = appdata.frequency;
+    blocker.block("Loading data for " + symbol + " from Yahoo!");
+    var g = $("#frequencySelect").val()[0];
+/*    if(frequency == "daily") {
       g="d";
     } else if(frequency == "weekly") {
       g="w";
     } else if(frequency == "monthly") {
       g="m";
     }
-
+  */  
     var url = "http://ichart.finance.yahoo.com/table.csv?s="+symbol+"&g="+g;
+    if(appdata.startDate) {
+      url += "&a=" + appdata.startDate.getMonth();
+      url += "&b=" + appdata.startDate.getDate();
+      url += "&c=" + appdata.startDate.getFullYear();
+    }
 
     $.jsonpProxy(url, function(data) {
+      blocker.unblock();
+
       var rows = data.split("\n").reverse();
       appdata.historicalData = new Array();
+      appdata.basicHistoricalData = new Array();
+      appdata.prettyHistoricalData = new Array();
+
       for(var i=1; i<rows.length-1; i++) {
         var cols = rows[i].split(",");
         var entry = {
@@ -116,18 +143,14 @@ var yahoo = {
           price: parseFloat(cols[6]), 
         };
         var basicEntry = new Array(Date.parse(cols[0]), parseFloat(cols[6]));
+        var prettyEntry = new Array(cols[0], parseFloat(cols[6]));
         appdata.historicalData.push(entry);
         appdata.basicHistoricalData.push(basicEntry);
+        appdata.prettyHistoricalData.push(prettyEntry);
       }
       grapher.showGraph();
-      calculator.doCalcs();
+      calculator.calculate();
     });
-  }
-}
-
-var calculator = {
-  doCalcs : function() {
-    console.log("performing calcs");
   }
 }
 
@@ -139,12 +162,16 @@ var tabler = {
     .attr("border","0")
     .attr("class","display")
     .attr("id","pricesTable");
+    
+    dialog = $(document.createElement('div'));
+    dialog.attr("id", "tableDialog");
+    dialog.attr("title", "Stock Prices");
+    dialog.html(table);
 
-    // add to the dom
-    $("#pricesTableContainer").append(table);
+    $("body").append(dialog);
 
     $("#pricesTable").dataTable( {
-      "aaData": appdata.historicalData,
+      "aaData": appdata.prettyHistoricalData,
       "aoColumns": [
         { "sTitle": "Date" },
         { "sTitle": "Adjusted Closing Price" },
@@ -153,11 +180,17 @@ var tabler = {
       "sPaginationType": "full_numbers",
     });
     
+    $("#tableDialog").dialog({
+      height: 500,
+      width: 800,
+      modal: true,
+    });
   }
 }
 
 var grapher = {
   showGraph : function() {
+    $("#graphHolder").html("");
     $.plot(
       $("#graphHolder"),
       [appdata.basicHistoricalData,],
@@ -178,9 +211,27 @@ $(document).ready(function() {
     lookuper.lookup( $("#symbolLookupBox").val() );
   }).css("width", "500px");
 
+  $("#showTableButton").click(function() {
+    console.log("showing table");
+    tabler.showTable();
+  });
+
+  $("#startDatePicker").datepicker({
+    changeMonth: true,
+    changeYear: true,
+    onSelect: function() {
+      appdata.startDate = $("#startDatePicker").datepicker("getDate");
+      yahoo.historicalPrices();
+    }
+  });
+
+  $("#frequencySelect").change(function() {
+    yahoo.historicalPrices();
+  });
+
   $.ui.autocomplete.prototype._renderItem = function( ul, item) {
     var re = new RegExp("" + this.term, "i") ;
-    var t = item.label.replace(re,"<span style='text-decoration:underline; font-weight:bold;'>" + this.term + "</span>");
+    var t = item.label.replace(re, "<span style='text-decoration:underline; font-weight:bold;'>" + this.term + "</span>");
     return $( "<li></li>" )
       .data( "item.autocomplete", item )
       .append( "<a>" + t + "</a>" )
