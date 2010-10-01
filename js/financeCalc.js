@@ -1,7 +1,7 @@
 
 	//will probably need to convert period information to a time & date value for reference
 	function meanRateOfReturn(periods){
-		var current = appdata.historicalData.length;
+		var current = appdata.historicalData.length-1;
 		var Vf = appdata.historicalData[current].price;
 		var meanRoR;
 		for(var i = current; i>current-periods; i--){
@@ -13,7 +13,7 @@
 	}
 
 	function standardDeviation(periods){
-		var current = appdata.historicalData.length;
+		var current = appdata.historicalData.length-1;
 		var sum = 0;
 		for(var i = current; i>current-periods; i--){
 			sum += appdata.historicalData[i].price;
@@ -28,7 +28,7 @@
 	}
 	
 	function annualizedMean(periods){
-		var current = appdata.historicalData.length;
+		var current = appdata.historicalData.length-1;
 		var product = 1;
 		var sumPeriods = 0;
 		var Vf = appdata.historicalData[current].price;
@@ -59,7 +59,7 @@
 	//also, stockcharts mentions that doing continuous calculations of this is slightly different
 	//also, also, RSI > 70 is overbought, RSI < 30 is oversold
 	//default of 14 periods
-		var current = appdata.historicalData.length;
+		var current = appdata.historicalData.length-1;
 		var AverageGain = 0;
 		var AverageLoss = 0;
 		
@@ -78,12 +78,11 @@
 
 	function simpleMovingAverage(periods, historic){
 		var sum = 0;
-		var current = appdata.historicalData.length;
+		var current = appdata.historicalData.length-1;
 		if(historic != current){
 			current = historic;
 		}
 		for(var i = current; i>current-periods; i--){
-			console.log(appdata.historicalData[i].price);
 			sum += appdata.historicalData[i].price;
 			
 		}
@@ -92,8 +91,9 @@
 	}
 	
 	function exponentialMovingAverage(periods){
-		var current = appdata.historicData.length;
+		var current = appdata.historicData.length-1;
 		var EMAprevious = simpleMovingAverage(periods, current-periods-1);
+		console.log(EMAprevious);
 		var multiplier = 2/(periods+1);
 		for(var i = current-periods; i<current; i++){
 			EMAprevious = ((appdata.historicalData[i].price-EMAprevious)*multiplier)+EMAprevious;
