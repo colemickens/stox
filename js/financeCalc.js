@@ -3,7 +3,7 @@
 	function meanRateOfReturn(periods){
 		var current = appdata.historicalData.length-1;
 		var Vf = appdata.historicalData[current].price;
-		var meanRoR;
+		var meanRoR = 0;
 		for(var i = current; i>current-periods; i--){
 			var Vi = appdata.historicalData[i].price;
 			meanRoR+=Math.log(Vf/Vi);
@@ -43,11 +43,11 @@
 	
 	function annualizedStandardDeviation(periods){
 	//annualized means by year and thus months value in equation, idk how it fits with periodic stdv
-		var annualSTDV = standardDeviation(periods)*Math.sqrt(12/months);
+		var annualSTDV = standardDeviation(periods)*Math.sqrt(12/periods);
 		return annualSTDV;
 	}
 	
-	function sharpeRatio(riskFreeRate){
+	function sharpeRatio(riskFreeRate, periods){
 		var R = meanRateOfReturn(periods);
 		var sigma = standardDeviation(periods);
 		var sharpe = (R-riskFreeRate)/sigma;
@@ -63,7 +63,7 @@
 		var AverageGain = 0;
 		var AverageLoss = 0;
 		
-		for(var i = current-periods; i<current; i++){
+		for(var i = current-periods-1; i<current-1; i++){
 			var change = appdata.historicalData[i].price-appdata.historicalData[i-1].price;
 			if(change >= 0){
 				AverageGain += change;
@@ -71,8 +71,12 @@
 				AverageLoss += change;
 			}
 		}
-		var RS = AverageGain/AverageLoss
-		var RSI = 100-(100/1+RS);
+		AverageGain /= 14;
+		AverageLoss /= 14;
+		
+		var RS = AverageGain/Math.abs(AverageLoss);
+		console.log(RS);
+		var RSI = 100-(100/(1+RS));
 		return RSI;
 	}
 
@@ -91,7 +95,7 @@
 	}
 	
 	function exponentialMovingAverage(periods){
-		var current = appdata.historicData.length-1;
+		var current = appdata.historicalData.length-1;
 		var EMAprevious = simpleMovingAverage(periods, current-periods-1);
 		console.log(EMAprevious);
 		var multiplier = 2/(periods+1);
@@ -112,7 +116,8 @@
 	
 	function bollingerBands(periods){
 		//default to 20
-		var middleBand = simpleMovingAverage(periods);
+		var current = appdata.historicalData.length-1;
+		var middleBand = simpleMovingAverage(periods, current);
 		var upperBand = middleBand + (standardDeviation(periods)*2);
 		var lowerBand = middleBand - (standardDeviation(periods)*2);
 		
