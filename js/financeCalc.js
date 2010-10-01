@@ -1,10 +1,10 @@
 
 	//will probably need to convert period information to a time & date value for reference
 	function meanRateOfReturn(periods){
-		var Vi = getInitialInvestment();
+		var Vf = getPrice(stock, current);
 		var meanRoR;
-		for(var i=1; i<=periods; i++){
-			var Vf = getFinalInvestment(currentPeriod);
+		for(var i = current; i>=current - periods; i--){
+			var Vi = getPrice(current);
 			meanRoR+=Math.log(Vf/Vi);
 		}
 		meanRoR = (1/periods)*meanRoR;
@@ -23,6 +23,19 @@
 		}
 		var standardDev = Math.sqrt(deviants/periods);
 		return standardDev;
+	}
+	
+	function annualizedMean(periods){
+		var product = 1;
+		var sumPeriods = 0;
+		var Vf = getPrice(stock, current);
+		for(var i = current; i>=current-periods; i--){
+			var Vi = getPrice(stock, i);
+			product *= Math.pow((1 + (Vf/Vi)), i);
+			sumPeriods += i;
+		}
+		var annualMean = Math.pow(product, (1/sumPeriods))-1;
+		return annualMean;
 	}
 	
 	function annualizedStandardDeviation(periods){
