@@ -4,13 +4,12 @@
  - fix table rendering (you know, to make it not look like shit and such
  - redraw flot on resize window
  - sizing/positioning
- - calc configs, etc
  - load default date (from stock)
  - disable dates before it
  - frequency, only let them select frequency in start date picker
  - underscores in option/calc names -> " "
  - show input var (periods) next to calc results
- - rounding
+
 */
 
 var appdata = {
@@ -116,14 +115,7 @@ var yahoo = {
     var frequency = appdata.frequency;
     blocker.block("Loading data for " + symbol + " from Yahoo!");
     var g = $("#frequencySelect").val()[0];
-/*    if(frequency == "daily") {
-      g="d";
-    } else if(frequency == "weekly") {
-      g="w";
-    } else if(frequency == "monthly") {
-      g="m";
-    }
-  */  
+
     var url = "http://ichart.finance.yahoo.com/table.csv?s="+symbol+"&g="+g;
     if(appdata.startDate) {
       url += "&a=" + appdata.startDate.getMonth();
