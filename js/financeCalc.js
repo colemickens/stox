@@ -31,18 +31,8 @@
 	
 	function annualizedMean(periods){
 		var frequency = appdata.getFrequency();
-		var current = appdata.historicalData.length-1;
-		
-		var product = 1;
-		var periodNumber = periods;
-		var Vf = appdata.historicalData[current].price;
-		for(var i = current; i>current-periods; i--){
-			var Vi = appdata.historicalData[i].price;
-			product *= Math.pow((1 + (Vf/Vi)), periodNumber);
-			periodNumber--;
-			
-		}
-		var annualMean = Math.pow(product, (1/periods))-1;
+		var meanRoR = meanRateOfReturn(periods);
+		var annualMean = Math.pow((1+meanRoR), (1/(periods/frequency)))-1;
 		return annualMean;
 	}
 	
