@@ -1,6 +1,14 @@
 var appdata = {
   constituents: [],
   historicalData: [],
+  getPrices : function() {
+    var ret = new Array();
+    for(var i=0; i<appdata.historicalData.length; i++) {
+      var entry = [ i, appdata.historicalData[i][1] ];
+      ret.push(entry);
+    }
+    return ret;
+  }
 }
 
 var blocker = {
@@ -34,7 +42,6 @@ var init = {
           appdata.constituents.push(symbols[i].trim());
         }
       }
-      console.log(appdata.constituents);
       init.finish();
     });
   },
@@ -47,17 +54,33 @@ var init = {
 
 var lookuper = {
   lookup : function(symbol) {
-    var potentials = new Array();
     var url = "http://d.yimg.com/autoc.finance.yahoo.com/autoc?query="+symbol+"&callback=YAHOO.Finance.SymbolSuggest.ssCallback";
+    var potentials = new Array();
+
     $.jsonpRewrap(url, function(data) {
       for(var i=0; i<data.ResultSet.Result.length; i++) {
         var result = data.ResultSet.Result[i];
-        if(result.exch == "NMS") {
-          potentials["(" + result.exchDisp + ") (" + result.symbol + "): " + result.name] = result.symbol;
-          potentials[result.symbol + ": " + result.name] = result.symbol;
-          console.log(result);
+        if(result.exch == "NMS" || result.exch == "NYQ") {
+          var entry = {
+            label: "(" + result.exchDisp + ": " + result.symbol + ") " + result.name,
+            value: result.symbol
+          }
+          potentials.push(entry);
         }
       }
+
+      var selectedLabel = "";
+
+      $("#symbolLookupBox").autocomplete({
+        source: potentials,
+        select: function(event, ui) {
+          selectedLabel = ui.item.label;
+          yahoo.historicalPrices(ui.item.value, "d");
+        },
+        close: function(event, ui) {
+          $("#symbolLookupBox").val(selectedLabel);
+        }
+      });
     });
   }
 }
@@ -76,14 +99,22 @@ var yahoo = {
     var url = "http://ichart.finance.yahoo.com/table.csv?s="+symbol+"&g="+g;
 
     $.jsonpProxy(url, function(data) {
-      var rows = data.split("\n");
+      var rows = data.split("\n").reverse();
       appdata.historicalData = new Array();
       for(var i=1; i<rows.length-1; i++) {
         var cols = rows[i].split(",");
-        appdata.historicalData.push(new Array(cols[0], cols[6]));
+        var entry = new Array( Date.parse(cols[0]), cols[6] );
+        appdata.historicalData.push(entry);
       }
-      //console.log(appdata.historicalData);
+      grapher.showGraph();
+      calculator.doCalcs();
     });
+  }
+}
+
+var calculator = {
+  doCalcs : function() {
+    console.log("performing calcs");
   }
 }
 
@@ -112,26 +143,37 @@ var tabler = {
     });
     
     console.log("Done constructing datatables table.");
-    return "I'm so cool!";
   }
 }
 
 var grapher = {
-  graph : function() {
-    alert("hello grapher world");
+  showGraph : function() {
+    $.plot(
+      $("#graphHolder"),
+      [appdata.historicalData,],
+      {
+        xaxis: {
+          mode: "time",
+          timeformat: "%y/%m/%d",
+        }
+      }
+    );
   }
 }
 
 $(document).ready(function() {
   init.init("@^GSPC");
-  var avail = [ "microsoft", "google" ];
-  $("input#symbolLookupBox")
-    /*.keyup(function() {
-      lookuper.lookup( $("#symbolLookupBox").val() );
-    })*/
-    .css("width", "500px")
-    .autocomplete({
-      //source: potentials,
-      source: ["microsoft", "google"]
-    });
+
+  $("#symbolLookupBox").keyup(function() {
+    lookuper.lookup( $("#symbolLookupBox").val() );
+  }).css("width", "500px");
+
+  $.ui.autocomplete.prototype._renderItem = function( ul, item) {
+    var re = new RegExp("" + this.term, "i") ;
+    var t = item.label.replace(re,"<span style='text-decoration:underline; font-weight:bold;'>" + this.term + "</span>");
+    return $( "<li></li>" )
+      .data( "item.autocomplete", item )
+      .append( "<a>" + t + "</a>" )
+      .appendTo( ul );
+      };
 });
