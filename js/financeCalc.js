@@ -1,5 +1,5 @@
 
-	
+	//CORRECT
 	function meanRateOfReturn(periods){
 		var current = appdata.historicalData.length-1;
 		var Vf = appdata.historicalData[current].price;
@@ -28,26 +28,32 @@
 		return standardDev;
 	}
 	
+	
 	function annualizedMean(periods){
+		var frequency = appdata.getFrequency;
 		var current = appdata.historicalData.length-1;
+		
 		var product = 1;
-		var sumPeriods = 0;
+		var periodNumber = periods;
 		var Vf = appdata.historicalData[current].price;
 		for(var i = current; i>current-periods; i--){
 			var Vi = appdata.historicalData[i].price;
-			product *= Math.pow((1 + (Vf/Vi)), i);
-			sumPeriods += i;
+			product *= Math.pow((1 + (Vf/Vi)), periodNumber);
+			periodNumber--;
+			
 		}
-		var annualMean = Math.pow(product, (1/sumPeriods))-1;
+		var annualMean = Math.pow(product, (1/periods))-1;
 		return annualMean;
 	}
 	
+	//CORRECT
 	function annualizedStandardDeviation(periods){
-	//annualized means by year and thus months value in equation, idk how it fits with periodic stdv
-		var annualSTDV = standardDeviation(periods)*Math.sqrt(12/periods);
+		var frequency = appdata.getFrequency;
+		var annualSTDV = standardDeviation(periods)*Math.sqrt(frequency/periods);
 		return annualSTDV;
 	}
 	
+	//CORRECT
 	function sharpeRatio(riskFreeRate, periods){
 		var R = meanRateOfReturn(periods);
 		var sigma = standardDeviation(periods);
@@ -55,10 +61,9 @@
 		return sharpe;
 	}
 	
+	//CORRECT
 	function relativeStrengthIndex(periods){
-	//again, timing and period info is suspect to formatting issues
-	//also, stockcharts mentions that doing continuous calculations of this is slightly different
-	//also, also, RSI > 70 is overbought, RSI < 30 is oversold
+	//RSI > 70 is overbought, RSI < 30 is oversold
 	//default of 14 periods
 	
 		var current = appdata.historicalData.length-1;
@@ -76,8 +81,6 @@
 		
 		var AverageGain = InitialGain/periods;
 		var AverageLoss = InitialLoss/periods;
-		console.log("InitialAvgGain: " + AverageGain);
-		console.log("InitialAvgLoss: " + AverageLoss);
 		
 		for(var i = periods+1; i<=current; i++){
 		
@@ -92,13 +95,10 @@
 				}
 			
 			AverageGain = ((AverageGain*(periods-1))+currentGain)/periods;
-			AverageLoss = ((AverageLoss*(periods-1))+currentGain)/periods;
-			console.log("AvgGain: " + AverageGain);
-			console.log("AvgLoss: " + AverageLoss);
+			AverageLoss = ((AverageLoss*(periods-1))+currentLoss)/periods;
 
 		}
 		var RS = AverageGain/AverageLoss;
-		console.log(RS);
 		var RSI = 100 - (100/(1+RS));
 		return RSI;
 	}
@@ -118,7 +118,7 @@
 		return SMA;
 	}
 	
-	//CORRECT
+	//CORRECT w/ some ERROR
 	function exponentialMovingAverage(periods){
 		var current = appdata.historicalData.length-1;
 		var EMAprevious = simpleMovingAverage(periods, current-periods);
@@ -139,6 +139,7 @@
 		return MACD;
 	}
 	
+	//CORRECT
 	function bollingerBands(periods){
 		//default to 20
 		var current = appdata.historicalData.length-1;
