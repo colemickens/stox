@@ -1,10 +1,11 @@
 
 	//will probably need to convert period information to a time & date value for reference
 	function meanRateOfReturn(periods){
-		var Vf = getPrice(stock, current);
+		var current = appdata.historicalData.length;
+		var Vf = appdata.historicalData[current].price;
 		var meanRoR;
-		for(var i = current; i>=current - periods; i--){
-			var Vi = getPrice(current);
+		for(var i = current; i>current-periods; i--){
+			var Vi = appdata.historicalData[i].price;
 			meanRoR+=Math.log(Vf/Vi);
 		}
 		meanRoR = (1/periods)*meanRoR;
@@ -12,25 +13,27 @@
 	}
 
 	function standardDeviation(periods){
+		var current = appdata.historicalData.length;
 		var sum = 0;
-		for(var i = current; i>=current-periods; i--){
-			sum += getPrice(stock, i);
+		for(var i = current; i>current-periods; i--){
+			sum += appdata.historicalData[i].price;
 		}
 		var mean = sum/periods;
 		var deviants = 0;
-		for(var i = current; i>=current-periods; i--){
-			deviants += Math.pow((getPrice(stock, i)-mean), 2);
+		for(var i = current; i>current-periods; i--){
+			deviants += Math.pow((appdata.historicalData[i].price-mean), 2);
 		}
 		var standardDev = Math.sqrt(deviants/periods);
 		return standardDev;
 	}
 	
 	function annualizedMean(periods){
+		var current = appdata.historicalData.length;
 		var product = 1;
 		var sumPeriods = 0;
-		var Vf = getPrice(stock, current);
-		for(var i = current; i>=current-periods; i--){
-			var Vi = getPrice(stock, i);
+		var Vf = appdata.historicalData[current].price;
+		for(var i = current; i>current-periods; i--){
+			var Vi = appdata.historicalData[i].price;
 			product *= Math.pow((1 + (Vf/Vi)), i);
 			sumPeriods += i;
 		}
@@ -56,12 +59,12 @@
 	//also, stockcharts mentions that doing continuous calculations of this is slightly different
 	//also, also, RSI > 70 is overbought, RSI < 30 is oversold
 	//default of 14 periods
-		var current = today;
+		var current = appdata.historicalData.length;
 		var AverageGain = 0;
 		var AverageLoss = 0;
 		
-		for(var i = current-periods; i<=current; i++){
-			var change = getPrice(stock, i)-getPrice(stock, i-1);
+		for(var i = current-periods; i<current; i++){
+			var change = appdata.historicalData[i].price-appdata.historicalData[i-1].price;
 			if(change >= 0){
 				AverageGain += change;
 			}else{
@@ -73,20 +76,27 @@
 		return RSI;
 	}
 
-	function simpleMovingAverage(periods){
+	function simpleMovingAverage(periods, historic){
 		var sum = 0;
-		for(var i = current; i>=current-periods; i--){
-			sum += getPrice(stock, i);
+		var current = appdata.historicalData.length;
+		if(historic != current){
+			current = historic;
+		}
+		for(var i = current; i>current-periods; i--){
+			console.log(appdata.historicalData[i].price);
+			sum += appdata.historicalData[i].price;
+			
 		}
 		var SMA = sum/periods;
 		return SMA;
 	}
 	
 	function exponentialMovingAverage(periods){
-		var EMAprevious = simpleMovingAverage(current-periods-1, periods);
+		var current = appdata.historicData.length;
+		var EMAprevious = simpleMovingAverage(periods, current-periods-1);
 		var multiplier = 2/(periods+1);
-		for(var i = current-periods; i<=current; i++){
-			EMAprevious = ((getPrice(stock, i)-EMAprevious)*multiplier)+EMAprevious;
+		for(var i = current-periods; i<current; i++){
+			EMAprevious = ((appdata.historicalData[i].price-EMAprevious)*multiplier)+EMAprevious;
 		}
 		var EMA = EMAprevious;
 		return EMA;	
@@ -96,7 +106,7 @@
 		//default to 12 day and 26 day
 		//periods1 < periods2
 		//histogram is different than this calculation
-		var MACD = exponentialMovingAverage(current, periods1)-exponentialMovingAverage(current, periods2);
+		var MACD = exponentialMovingAverage(periods1)-exponentialMovingAverage(periods2);
 		return MACD;
 	}
 	
