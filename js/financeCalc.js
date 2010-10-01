@@ -31,6 +31,13 @@
 		return annualSTDV;
 	}
 	
+	function sharpeRatio(riskFreeRate){
+		var R = meanRateOfReturn(periods);
+		var sigma = standardDeviation(periods);
+		var sharpe = (R-riskFreeRate)/sigma;
+		return sharpe;
+	}
+	
 	function relativeStrengthIndex(periods){
 	//again, timing and period info is suspect to formatting issues
 	//also, stockcharts mentions that doing continuous calculations of this is slightly different
