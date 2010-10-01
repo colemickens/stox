@@ -11,6 +11,26 @@
 		return meanRoR;
 	}
 
+	function standardDeviation(periods){
+		var sum = 0;
+		for(var i = current; i>=current-periods; i--){
+			sum += getPrice(stock, i);
+		}
+		var mean = sum/periods;
+		var deviants = 0;
+		for(var i = current; i>=current-periods; i--){
+			deviants += Math.pow((getPrice(stock, i)-mean), 2);
+		}
+		var standardDev = Math.sqrt(deviants/periods);
+		return standardDev;
+	}
+	
+	function annualizedStandardDeviation(periods){
+	//annualized means by year and thus months value in equation, idk how it fits with periodic stdv
+		var annualSTDV = standardDeviation(periods)*Math.sqrt(12/months);
+		return annualSTDV;
+	}
+	
 	function relativeStrengthIndex(periods){
 	//again, timing and period info is suspect to formatting issues
 	//also, stockcharts mentions that doing continuous calculations of this is slightly different
@@ -60,3 +80,16 @@
 		return MACD;
 	}
 	
+	function bollingerBands(periods){
+		//default to 20
+		var middleBand = simpleMovingAverage(periods);
+		var upperBand = middleBand + (standardDeviation(periods)*2);
+		var lowerBand = middleBand - (standardDeviation(periods)*2);
+		
+		var bands = [];
+		bands[0] = lowerBand;
+		bands[1] = middleBand;
+		bands[2] = upperBand;
+		
+		return bands;
+	}
