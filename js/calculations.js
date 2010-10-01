@@ -12,6 +12,69 @@ var calculations = {
     calculation: function(data) {
       return exponentialMovingAverage(data.periods);
     }
+  },
+  macd : {
+    title: "MACD",
+    options: { period1: 12, period2: 26 },
+    calculation: function(data) {
+      return movingAverageConvergenceDivergence(data.period1, data.period2);
+    }
+  },
+  bollingerBands : {
+    title: "Bollinger Bands",
+    options: { periods: 20 },
+    calculation: function(data) {
+      var answer = bollingerBands(data.periods);
+      return answer.join(",");
+    }
+  },
+  relativeStrengthIndex : {
+    title: "Relative Strength Index",
+    options: { periods: 14 },
+    calculation: function(data) {
+      var answer = relativeStrengthIndex(data.periods);
+      if(answer > 70) {
+        answer += " (overbought)";
+      } else if(answer < 30) {
+        answer += " (oversold)";
+      }
+      return answer;
+    }
+  },
+  sharpeRatio : {
+    title: "Sharpe Ratio",
+    options: { riskFreeRateOfReturnAsADecimal: 0, periods: 10 },
+    calculation: function(data) {
+      return sharpeRatio(data.riskFreeRateOfReturnAsADecimal, data.periods);
+    }
+  },
+  annualizedMean : {
+    title: "Annualized Mean",
+    options: { periods: 10 },
+    calculation: function(data) {
+      return annualizedMean(data.periods);
+    }
+  },
+  annualizedStandardDeviation : {
+    title: "Annualized Standard Deviation",
+    options: { periods: 10 },
+    calculation: function(data) {
+      return annualizedStandardDeviation(data.periods);
+    }
+  },
+  standardDeviation : {
+    title: "Standard Deviation",
+    options: { periods: 10 },
+    calculation: function(data) {
+      return standardDeviation(data.periods);
+    }
+  },
+  meanRateOfReturn : {
+    title: "Mean Rate of Return",
+    options: { periods: 10 },
+    calculation: function(data) {
+      return meanRateOfReturn(data.periods);
+    }
   }
 };
 
@@ -24,12 +87,16 @@ var calculator = {
       var link = $(document.createElement("a"));
       link.html(calculations[k].title);
       link.attr("id", calculations[k].title.replace(/ /g,"_"));
+      link.attr("key", k);
       link.click(function() {
+        var k = $(this).attr("key");
+        console.log(k);
         // display dialog
         var optsDialog = $(document.createElement("div"));
         optsDialog.attr("id", "dialog_"+calculations[k].title.replace(/ /g,"_"));
         for(var opt in calculations[k].options) {
           optsDialog.append(opt + ': <input type="text" id="' + opt + 'var" value="' + calculations[k].options[opt] + '"/>');
+          optsDialog.append("<br/>");
         }
         
         $(document.body).append(optsDialog);
@@ -60,20 +127,6 @@ var calculator = {
       var options = calculations[k].options;
       var result = calculations[k].calculation(options);
       $("#calculationsArea").append("<p>").append(link).append(" = ").append(result).append("</p>");
-    }
-  }
-}
-
-var vals = ["a", "b", "c"];
-var testa = {
-  test : function() {
-    for(var v in vals) {
-      link = $(document.createElement("a"));
-      link.html(vals[v]);
-      link.click(function() {
-        alert(vals[v]);
-      });
-      $("#graphArea").append(link);
     }
   }
 }

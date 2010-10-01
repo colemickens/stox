@@ -8,6 +8,9 @@
  - load default date (from stock)
  - disable dates before it
  - frequency, only let them select frequency in start date picker
+ - underscores in option/calc names -> " "
+ - show input var (periods) next to calc results
+ - rounding
 */
 
 var appdata = {
