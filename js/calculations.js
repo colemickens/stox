@@ -1,4 +1,11 @@
 var calculations = {
+  periods : {
+    title: "Periods Shown",
+    options: {  },
+    calculation: function(data) {
+      
+    }
+  }
   simpleMovingAverage : {
     title: "Simple Moving Average",
     options: { periods: 4 },
@@ -25,11 +32,14 @@ var calculations = {
   },
   macd : {
     title: "MACD",
-    options: { period_1: 12, period_2: 26 },
+    options: { period_1: 12, period_2: 26, period_3: 9 },
     calculation: function(data) {
       try {
-        var answer = movingAverageConvergenceDivergence(data.period_1, data.period_2);
-        return Math.round(answer*100)/100;
+        var answer = movingAverageConvergenceDivergence(data.period_1, data.period_2, data.period_3);
+        for(var i=0; i<answer.length; i++) {
+          answer[i] = (Math.round(answer[i]*100)/100);
+        } 
+        return answer.join(", ");
       } catch(e) {
         return "[error]";
       }
@@ -122,7 +132,7 @@ var calculations = {
     options: { periods: 10 },
     calculation: function(data) {
       try{
-        var answer = meanRateOfReturn(data.periods);
+        var answer = meanRateOfReturn(data.periods, appdata.historicalData.length-1);
         answer = answer*100;
         return Math.round(answer*100)/100 + "%";
       } catch(e) {

@@ -10,6 +10,13 @@
  - underscores in option/calc names -> " "
  - show input var (periods) next to calc results
 
+ - convert to using one list to track prices (And other stuff)
+ - multiple (types of) options for config boxes 
+
+
+ FOR CHRIS
+ - show periods in view
+
 */
 
 var appdata = {
@@ -24,6 +31,7 @@ var appdata = {
     if( $("#frequencySelect").val() == "monthly") { return 12; }
     else { return 0; }
   },
+  log: true,
 }
 
 var blocker = {
@@ -83,13 +91,12 @@ var lookuper = {
     $.jsonpRewrap(url, function(data) {
       for(var i=0; i<data.ResultSet.Result.length; i++) {
         var result = data.ResultSet.Result[i];
-        if(result.exch == "NMS" || result.exch == "NYQ") {
+          var exchDisp = ((result.exchDisp == undefined) ? "Other" : result.exchDisp);
           var entry = {
-            label: "(" + result.exchDisp + ": " + result.symbol + ") " + result.name,
+            label: "(" + exchDisp + ": " + result.symbol + ") " + result.name,
             value: result.symbol
           }
           potentials.push(entry);
-        }
       }
 
       var selectedLabel = "";
