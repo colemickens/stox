@@ -25,6 +25,7 @@ var appdata = {
   basicHistoricalData: [],
   prettyHistoricalData: [],
   symbol: "",
+  startDate: undefined,
   getFrequency : function() {
     if( $("#frequencySelect").val() == "daily") { return 365; }
     if( $("#frequencySelect").val() == "weekly") { return 52; }
@@ -150,6 +151,12 @@ var yahoo = {
         appdata.basicHistoricalData.push(basicEntry);
         appdata.prettyHistoricalData.push(prettyEntry);
       }
+      // set the default start date
+      if(appdata.startDate == undefined) {
+        console.log(appdata.historicalData[0].date + ": " + appdata.historicalData[0].price);
+        appdata.startDate = appdata.historicalData[0].date;
+        $("#startDatePicker").datepicker("setDate", new Date(appdata.startDate));
+      }
       grapher.showGraph();
       calculator.calculate();
     });
@@ -208,6 +215,9 @@ var grapher = {
 
 $(document).ready(function() {
   init.init("@^GSPC");
+  $(window).resize(function() {
+    grapher.showGraph();
+  });
 
   $("#symbolLookupBox").keyup(function() {
     lookuper.lookup( $("#symbolLookupBox").val() );

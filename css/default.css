@@ -57,6 +57,9 @@ html, body {
   padding-right: 6px;
 } 
 
+.calculation {
+  padding-bottom: 8px;
+}
 
 #footer {
   width: 100%;

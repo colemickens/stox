@@ -3,7 +3,17 @@ var calculations = {
     title: "Periods Shown",
     options: {  },
     calculation: function(data) {
-      
+      var startDate = appdata.startDate; 
+      var endDate = new Date();
+      var diffDate = endDate - startDate;
+      var frequency = $("#frequencySelect").val();
+      if(frequency == "daily") {
+        return Math.floor( diffDate/86400000 );
+      } else if(frequency == "monthly") {
+        return Math.floor( diffDate/2628000000 );
+      } else if(frequency == "yearly") {
+        return Math.floor ( diffDate/31536000000 );
+      }
     }
   },
   simpleMovingAverage : {
@@ -121,7 +131,7 @@ var calculations = {
     calculation: function(data) {
       try {
         var answer = standardDeviationRoR(data.periods);
-        return Math.round(answer*100)/100;
+        return Math.round(answer*10000)/10000;
       } catch(e) {
         return "[error]";
       }
@@ -189,11 +199,11 @@ var calculator = {
       
       var options = calculations[k].options;
       var result = calculations[k].calculation(options);
-      $("#calculationsArea").append("<p>").append(link).append(" = ").append(result);
+      $("#calculationsArea").append('<div class="calculation">').append(link).append(" = ").append(result);
       for(var opt in options) {
         $("#calculationsArea").append("<br/>"+opt.replace(/_/g, " ") +": "+options[opt]);
       }
-      $("#calculationsArea").append("</p>");
+      $("#calculationsArea").append('</div>');
     }
   }
 }
