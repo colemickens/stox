@@ -4,9 +4,16 @@
 		var current = appdata.historicalData.length-1;
 		var Vf = appdata.historicalData[current].price;
 		var meanRoR = 0;
-		for(var i = current; i>current-periods; i--){
-			var Vi = appdata.historicalData[i].price;
-			meanRoR+=Math.log(Vf/Vi);
+		if (appdata.log){
+			for(var i = current; i>current-periods; i--){
+				var Vi = appdata.historicalData[i].price;
+				meanRoR+=Math.log(Vf/Vi);
+			}
+		}else{
+			for(var i = current; i>current-periods; i--){
+				var Vi = appdata.historicalData[i].price;
+				meanRoR+=(Vf-Vi)/Vi;
+			}
 		}
 		meanRoR = (1/periods)*meanRoR;
 		return meanRoR;
@@ -146,9 +153,9 @@
 		var MACDHistogram = MACD - signalLine;
 		
 		var results = [];
-		results[1] = MACD;
-		results[2] = signalLine;
-		results[3] = MACDHistogram;
+		results[0] = MACD;
+		results[1] = signalLine;
+		results[2] = MACDHistogram;
 		return results;
 	}
 	
