@@ -28,6 +28,21 @@
 		return standardDev;
 	}
 	
+	function standardDeviationVariance(periods){
+		var current = appdata.historicalData.length-1;
+		var sum = 0;
+		for(var i = current; i>current-periods; i--){
+			sum += appdata.historicalData[i].price - appdata.historicalData[i-1].price;
+		}
+		var mean = sum/periods;
+		var deviants = 0;
+		for(var i = current; i>current-periods; i--){
+			deviants += Math.pow(((appdata.historicalData[i].price-appdata.historicalData[i-1].price)-mean), 2);
+		}
+		var standardDev = Math.sqrt(deviants/periods);
+		return standardDev;
+	}
+	
 	
 	function annualizedMean(periods){
 		var frequency = appdata.getFrequency();
@@ -121,12 +136,20 @@
 	}
 
 	//CORRECT - SAVE FOR MINOR ERROR PROPAGATED THROUGH EMA
-	function movingAverageConvergenceDivergence(periods1, periods2){
+	function movingAverageConvergenceDivergence(periods1, periods2, periods3){
 		//default to 12 day and 26 day
 		//periods1 < periods2
 		//histogram is different than this calculation
+		//period3 default to 9
 		var MACD = exponentialMovingAverage(periods1)-exponentialMovingAverage(periods2);
-		return MACD;
+		var signalLine = exponentialMovingAverage(periods3);
+		var MACDHistogram = MACD - signalLine;
+		
+		var results = [];
+		results[1] = MACD;
+		results[2] = signalLine;
+		results[3] = MACDHistogram;
+		return results;
 	}
 	
 	//CORRECT
