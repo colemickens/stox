@@ -5,7 +5,7 @@ var calculations = {
     calculation: function(data) {
       
     }
-  }
+  },
   simpleMovingAverage : {
     title: "Simple Moving Average",
     options: { periods: 4 },
