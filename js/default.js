@@ -240,6 +240,18 @@ $(document).ready(function() {
   $("#frequencySelect").change(function() {
     yahoo.historicalPrices();
   });
+  
+  $("#rateMethodSelect").change(function() {
+    if($("#rateMethodSelect").val() == "logrithmic") {
+      appdata.log = true;
+    } else {
+      appdata.log = false;
+    }
+    calculator.calculate();
+  });
+  
+  $("#rateMethodSelect").val("logrithmic");
+  appdata.log = true;
 
   $.ui.autocomplete.prototype._renderItem = function( ul, item) {
     var re = new RegExp("" + this.term, "i") ;
