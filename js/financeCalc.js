@@ -1,7 +1,10 @@
 
 	//CORRECT
-	function meanRateOfReturn(periods){
+	function meanRateOfReturn(periods, historic){
 		var current = appdata.historicalData.length-1;
+		if (historic != current){
+			current = historic;
+		}
 		var Vf = appdata.historicalData[current].price;
 		var meanRoR = 0;
 		if (appdata.log){
@@ -35,16 +38,16 @@
 		return standardDev;
 	}
 	
-	function standardDeviationVariance(periods){
+	function standardDeviationRoR(periods){
 		var current = appdata.historicalData.length-1;
 		var sum = 0;
 		for(var i = current; i>current-periods; i--){
-			sum += appdata.historicalData[i].price - appdata.historicalData[i-1].price;
+			sum += meanRateOfReturn(periods, i);
 		}
 		var mean = sum/periods;
 		var deviants = 0;
 		for(var i = current; i>current-periods; i--){
-			deviants += Math.pow(((appdata.historicalData[i].price-appdata.historicalData[i-1].price)-mean), 2);
+			deviants += Math.pow((meanRateOfReturn(periods, i)-mean), 2);
 		}
 		var standardDev = Math.sqrt(deviants/periods);
 		return standardDev;
@@ -53,22 +56,22 @@
 	
 	function annualizedMean(periods){
 		var frequency = appdata.getFrequency();
-		var meanRoR = meanRateOfReturn(periods);
+		var meanRoR = meanRateOfReturn(periods, appdata.historicalData.length-1);
 		var annualMean = Math.pow((1+meanRoR), (1/(periods/frequency)))-1;
 		return annualMean;
 	}
 	
-	//CORRECT
+	
 	function annualizedStandardDeviation(periods){
 		var frequency = appdata.getFrequency();
-		var annualSTDV = standardDeviation(periods)*Math.sqrt(frequency/periods);
+		var annualSTDV = standardDeviationRoR(periods)*Math.sqrt(frequency/periods);
 		return annualSTDV;
 	}
 	
 	//CORRECT
 	function sharpeRatio(riskFreeRate, periods){
-		var R = meanRateOfReturn(periods);
-		var sigma = standardDeviation(periods);
+		var R = meanRateOfReturn(periods, appdata.historicalData.length-1);
+		var sigma = standardDeviationRoR(periods);
 		var sharpe = (R-riskFreeRate)/sigma;
 		return sharpe;
 	}
@@ -135,7 +138,7 @@
 		var current = appdata.historicalData.length-1;
 		var EMAprevious = simpleMovingAverage(periods, current-periods);
 		var multiplier = 2/(periods+1);
-		for(var i = current-periods; i<current; i++){
+		for(var i = current-periods; i<=current; i++){
 			EMAprevious = ((appdata.historicalData[i].price-EMAprevious)*multiplier)+EMAprevious;
 		}
 		var EMA = EMAprevious;

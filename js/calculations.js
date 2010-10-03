@@ -120,7 +120,7 @@ var calculations = {
     options: { periods: 10 },
     calculation: function(data) {
       try {
-        var answer = standardDeviation(data.periods);
+        var answer = standardDeviationRoR(data.periods);
         return Math.round(answer*100)/100;
       } catch(e) {
         return "[error]";
