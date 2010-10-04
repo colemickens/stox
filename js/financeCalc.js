@@ -89,7 +89,7 @@
 	
 	//CORRECT
 	function sharpeRatio(riskFreeRate){
-		var R = annualizedMeans();
+		var R = annualizedMean();
 		var sigma = annualizedStandardDeviation();
 		var sharpe = (R-riskFreeRate)/sigma;
 		return sharpe;
