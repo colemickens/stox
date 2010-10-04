@@ -88,9 +88,9 @@
 	}
 	
 	//CORRECT
-	function sharpeRatio(riskFreeRate, periods){
-		var R = meanRateOfReturn(periods, appdata.historicalData.length-1);
-		var sigma = standardDeviationRoR(periods);
+	function sharpeRatio(riskFreeRate){
+		var R = annualizedMeans();
+		var sigma = annualizedStandardDeviation();
 		var sharpe = (R-riskFreeRate)/sigma;
 		return sharpe;
 	}
