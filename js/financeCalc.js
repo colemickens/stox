@@ -1,25 +1,22 @@
 
 	//CORRECT
-	function meanRateOfReturn(periods, historic){
+	function meanRateOfReturn(){
 		var current = appdata.historicalData.length-1;
-		if (historic != current){
-			current = historic;
-		}
 		var meanRoR = 0;
 		if (appdata.log){
-			for(var i = current; i>current-periods; i--){
+			for(var i = current; i>0; i--){
 				var Vf = appdata.historicalData[i].price;
 				var Vi = appdata.historicalData[i-1].price;
 				meanRoR+=logRoR(Vf, Vi);
 			}
 		}else{
-			for(var i = current; i>current-periods; i--){
+			for(var i = current; i>0; i--){
 				var Vf = appdata.historicalData[i].price;
 				var Vi = appdata.historicalData[i-1].price;
 				meanRoR+=simpleRoR(Vf, Vi);
 			}
 		}
-		meanRoR = (1/periods)*meanRoR;
+		meanRoR = (1/appdata.historicalData.length)*meanRoR;
 		return meanRoR;
 	}
 	
@@ -49,45 +46,44 @@
 		return standardDev;
 	}
 	
-	function standardDeviationRoR(periods){
+	function standardDeviationRoR(){
 		var current = appdata.historicalData.length-1;
 		var sum = 0;
 		if(appdata.log){
-			for(var i = current; i>current-periods; i--){
+			for(var i = current; i>0; i--){
 				sum += logRoR(appdata.historicalData[i].price, appdata.historicalData[i-1].price);
 			}
-			var mean = sum/periods;
+			var mean = sum/appdata.historicalData.length;
 			var deviants = 0;
-			for(var i = current; i>current-periods; i--){
+			for(var i = current; i>0; i--){
 				deviants += Math.pow((logRoR(appdata.historicalData[i].price, appdata.historicalData[i-1].price)-mean), 2);
 			}
-			var standardDev = Math.sqrt(deviants/periods);
+			var standardDev = Math.sqrt(deviants/appdata.historicalData.length);
 		}else{
-			for(var i = current; i>current-periods; i--){
+			for(var i = current; i>0; i--){
 				sum += simpleRoR(appdata.historicalData[i].price, appdata.historicalData[i-1].price);
 			}
-			var mean = sum/periods;
+			var mean = sum/appdata.historicalData.length;
 			var deviants = 0;
-			for(var i = current; i>current-periods; i--){
+			for(var i = current; i>0; i--){
 				deviants += Math.pow((simpleRoR(appdata.historicalData[i].price, appdata.historicalData[i-1].price)-mean), 2);
 			}
-			var standardDev = Math.sqrt(deviants/periods);
+			var standardDev = Math.sqrt(deviants/appdata.historicalData.length);
 		}
 		return standardDev;
 	}
 	
 	
-	function annualizedMean(periods){
+	function annualizedMean(){
 		var frequency = appdata.getFrequency();
-		var meanRoR = meanRateOfReturn(periods, appdata.historicalData.length-1);
-		var annualMean = Math.pow((1+meanRoR), (1/(periods/frequency)))-1;
+		var annuallMean = meanRateOfReturn()*frequency;
 		return annualMean;
 	}
 	
 	
-	function annualizedStandardDeviation(periods){
+	function annualizedStandardDeviation(){
 		var frequency = appdata.getFrequency();
-		var annualSTDV = standardDeviationRoR(periods)*Math.sqrt(frequency/periods);
+		var annualSTDV = standardDeviationRoR()*Math.sqrt(frequency);
 		return annualSTDV;
 	}
 	
