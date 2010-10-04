@@ -27,7 +27,7 @@ var appdata = {
   symbol: "",
   startDate: undefined,
   getFrequency : function() {
-    if( $("#frequencySelect").val() == "daily") { return 365; }
+    if( $("#frequencySelect").val() == "daily") { return 251; }
     if( $("#frequencySelect").val() == "weekly") { return 52; }
     if( $("#frequencySelect").val() == "monthly") { return 12; }
     else { return 0; }

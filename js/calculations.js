@@ -93,10 +93,10 @@ var calculations = {
   },
   annualizedMean : {
     title: "Annualized Mean Rate of Return",
-    options: { periods: 10 },
+    options: { /* periods: 10 */ },
     calculation: function(data) {
       try {
-        var answer = annualizedMean(data.periods);
+        var answer = annualizedMean(/*data.periods*/);
         return Math.round(answer*100)/100;
       } catch(e) {
         return "[error]";
@@ -105,10 +105,10 @@ var calculations = {
   },
   annualizedStandardDeviation : {
     title: "Annualized Standard Deviation",
-    options: { periods: 10 },
+    options: { /* periods: 10 */ },
     calculation: function(data) {
       try {
-        var answer = annualizedStandardDeviation(data.periods);
+        var answer = annualizedStandardDeviation(/*data.periods*/);
         return Math.round(answer*100)/100;
       } catch(e) {
         return "[error]";
@@ -117,10 +117,10 @@ var calculations = {
   },
   standardDeviation : {
     title: "Standard Deviation",
-    options: { periods: 10 },
+    options: { /* periods: 10 */ },
     calculation: function(data) {
       try {
-        var answer = standardDeviationRoR(data.periods);
+        var answer = standardDeviationRoR(/*data.periods*/);
         return Math.round(answer*10000)/10000;
       } catch(e) {
         return "[error]";
@@ -129,10 +129,10 @@ var calculations = {
   },
   meanRateOfReturn : {
     title: "Mean Rate of Return",
-    options: { periods: 10 },
+    options: { /* periods: 10 */ },
     calculation: function(data) {
       try{
-        var answer = meanRateOfReturn(data.periods, appdata.historicalData.length-1);
+        var answer = meanRateOfReturn(/*data.periods, appdata.historicalData.length-1*/);
         answer = answer*100;
         return Math.round(answer*100)/100 + "%";
       } catch(e) {
