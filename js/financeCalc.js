@@ -76,7 +76,7 @@
 	
 	function annualizedMean(){
 		var frequency = appdata.getFrequency();
-		var annuallMean = meanRateOfReturn()*frequency;
+		var annualMean = meanRateOfReturn()*frequency;
 		return annualMean;
 	}
 	
