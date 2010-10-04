@@ -200,16 +200,22 @@ var tabler = {
 var grapher = {
   showGraph : function() {
     $("#graphHolder").html("");
-    $.plot(
-      $("#graphHolder"),
-      [appdata.basicHistoricalData,],
-      {
-        xaxis: {
-          mode: "time",
-          timeformat: "%y/%m/%d",
-        }
+    var data = [ appdata.basicHistoricalData ];
+    var options = {
+      xaxis: {
+        mode: "time",
+        timeformat: "%y/%m/%d",
+      },
+      legend: {
+        show: true,
+        position: "ne",
+        noColumns: 1,
+        margin: 10,
+	backgroundOpacity: 0.5,
       }
-    );
+    };
+
+    $.plot( $("#graphHolder"), data, options );
   }
 }
 

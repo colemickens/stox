@@ -3,17 +3,7 @@ var calculations = {
     title: "Periods Shown",
     options: {  },
     calculation: function(data) {
-      var startDate = appdata.startDate; 
-      var endDate = new Date();
-      var diffDate = endDate - startDate;
-      var frequency = $("#frequencySelect").val();
-      if(frequency == "daily") {
-        return Math.floor( diffDate/86400000 );
-      } else if(frequency == "monthly") {
-        return Math.floor( diffDate/2628000000 );
-      } else if(frequency == "yearly") {
-        return Math.floor ( diffDate/31536000000 );
-      }
+      return appdata.historicalData.length;
     }
   },
   simpleMovingAverage : {
