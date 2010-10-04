@@ -23,7 +23,7 @@
 		return meanRoR;
 	}
 	
-	function simpleRoR(periods){
+	function simpleRoR(Vf, Vi){
 		var RoR = (Vf-Vi)/Vi;
 		return RoR;
 	}
