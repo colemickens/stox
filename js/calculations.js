@@ -80,10 +80,10 @@ var calculations = {
   },
   sharpeRatio : {
     title: "Sharpe Ratio",
-    options: { risk_free_rate_of_return_as_decimal: 0, periods: 10 },
+    options: { risk_free_rate_of_return_as_decimal: 0/*, periods: 10 */},
     calculation: function(data) {
       try{
-        var answer = sharpeRatio(data.risk_free_rate_of_return_as_decimal, data.periods);
+        var answer = sharpeRatio(data.risk_free_rate_of_return_as_decimal/*, data.periods*/);
         answer = answer * 100;
         return Math.round(answer*100)/100 + "%";
       } catch(e) {
@@ -97,7 +97,7 @@ var calculations = {
     calculation: function(data) {
       try {
         var answer = annualizedMean(/*data.periods*/);
-        return Math.round(answer*100)/100;
+        return Math.round(answer*10000)/100 + "%";
       } catch(e) {
         return "[error]";
       }
@@ -109,7 +109,7 @@ var calculations = {
     calculation: function(data) {
       try {
         var answer = annualizedStandardDeviation(/*data.periods*/);
-        return Math.round(answer*100)/100;
+        return Math.round(answer*10000)/10000;
       } catch(e) {
         return "[error]";
       }

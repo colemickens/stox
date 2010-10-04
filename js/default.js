@@ -46,6 +46,8 @@ var blocker = {
     dialog.dialog({
       height: 140,
       modal: true,
+      closeOnEscape: false,
+      open: function(event, ui) { $(".ui-dialog-titlebar-close").hide(); }
     });
   },
 
@@ -200,7 +202,7 @@ var tabler = {
 var grapher = {
   showGraph : function() {
     $("#graphHolder").html("");
-    var data = [ appdata.basicHistoricalData ];
+    var data = [ { color: "#1fcd1f", data: appdata.basicHistoricalData } ];
     var options = {
       xaxis: {
         mode: "time",

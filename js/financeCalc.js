@@ -161,7 +161,7 @@
 			EMAprevious = ((appdata.historicalData[i].price-EMAprevious)*multiplier)+EMAprevious;
 		}
 		var EMA = EMAprevious;
-		return EMA;	
+		return EMA;
 	}
 
 	//CORRECT
