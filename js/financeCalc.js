@@ -5,21 +5,32 @@
 		if (historic != current){
 			current = historic;
 		}
-		var Vf = appdata.historicalData[current].price;
 		var meanRoR = 0;
 		if (appdata.log){
 			for(var i = current; i>current-periods; i--){
-				var Vi = appdata.historicalData[i].price;
-				meanRoR+=Math.log(Vf/Vi);
+				var Vf = appdata.historicalData[i].price;
+				var Vi = appdata.historicalData[i-1].price;
+				meanRoR+=logRoR(Vf, Vi);
 			}
 		}else{
 			for(var i = current; i>current-periods; i--){
-				var Vi = appdata.historicalData[i].price;
-				meanRoR+=(Vf-Vi)/Vi;
+				var Vf = appdata.historicalData[i].price;
+				var Vi = appdata.historicalData[i-1].price;
+				meanRoR+=simpleRoR(Vf, Vi);
 			}
 		}
 		meanRoR = (1/periods)*meanRoR;
 		return meanRoR;
+	}
+	
+	function simpleRoR(periods){
+		var RoR = (Vf-Vi)/Vi;
+		return RoR;
+	}
+	
+	function logRoR(Vf, Vi){
+		var RoR = Math.log(Vf/Vi);
+		return RoR;
 	}
 
 	//CORRECT
@@ -41,15 +52,27 @@
 	function standardDeviationRoR(periods){
 		var current = appdata.historicalData.length-1;
 		var sum = 0;
-		for(var i = current; i>current-periods; i--){
-			sum += meanRateOfReturn(periods, i);
+		if(appdata.log){
+			for(var i = current; i>current-periods; i--){
+				sum += logRoR(appdata.historicalData[i].price, appdata.historicalData[i-1].price);
+			}
+			var mean = sum/periods;
+			var deviants = 0;
+			for(var i = current; i>current-periods; i--){
+				deviants += Math.pow((logRoR(appdata.historicalData[i].price, appdata.historicalData[i-1].price)-mean), 2);
+			}
+			var standardDev = Math.sqrt(deviants/periods);
+		}else{
+			for(var i = current; i>current-periods; i--){
+				sum += simpleRoR(appdata.historicalData[i].price, appdata.historicalData[i-1].price);
+			}
+			var mean = sum/periods;
+			var deviants = 0;
+			for(var i = current; i>current-periods; i--){
+				deviants += Math.pow((simpleRoR(appdata.historicalData[i].price, appdata.historicalData[i-1].price)-mean), 2);
+			}
+			var standardDev = Math.sqrt(deviants/periods);
 		}
-		var mean = sum/periods;
-		var deviants = 0;
-		for(var i = current; i>current-periods; i--){
-			deviants += Math.pow((meanRateOfReturn(periods, i)-mean), 2);
-		}
-		var standardDev = Math.sqrt(deviants/periods);
 		return standardDev;
 	}
 	
@@ -133,7 +156,7 @@
 		return SMA;
 	}
 	
-	//CORRECT w/ some ERROR
+	//CORRECT
 	function exponentialMovingAverage(periods){
 		var current = appdata.historicalData.length-1;
 		var EMAprevious = simpleMovingAverage(periods, current-periods);
@@ -145,7 +168,7 @@
 		return EMA;	
 	}
 
-	//CORRECT - SAVE FOR MINOR ERROR PROPAGATED THROUGH EMA
+	//CORRECT
 	function movingAverageConvergenceDivergence(periods1, periods2, periods3){
 		//default to 12 day and 26 day
 		//periods1 < periods2
