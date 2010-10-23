@@ -139,7 +139,86 @@ var calculations = {
         return "[error]";
       }
     }
-  }
+  },
+  autocorrelationOfStock: {
+    title: "Autocorrelation of Stock",
+    options: {  },
+    calculation: function(data) {
+
+    }
+  },
+  autocorrelationOfSpx: {
+    title: "Autocorrelation of SPX",
+    options: {  },
+    calculation: function(data) {
+    }
+  },
+  correlationBetweenReturnRatesOfStock: {
+    title: "Correlation b/w rr of Stock",
+    options: {  },
+    calculation: function(data) {
+    }
+  },
+  correlationBetweenReturnRatesOfSpx: {
+    title: "Correlation b/w rr of SPX",
+    options: {  },
+    calculation: function(data) {
+    }
+  },
+  beta : {
+    title: "Beta",
+    options: {  },
+    calculation: function(data) {
+      try {
+        return "[beta]";
+      } catch(e) {
+        return "[error]";
+      }
+    }
+  },
+  expectedCostOfEquity: {
+    title: "Expected Cost of Equity",
+    options: {  },
+    calculation: function(data) {
+      try {
+      } catch(e) {
+
+      }
+    }
+  },
+  excessKurtosis : {
+    title: "Excess Kurtosis",
+    options: {  },
+    calculation: function(data) {
+      try {
+        return "[excessKurtosis]";
+      } catch(e) {
+        return "[error]";
+      }
+    }
+  },
+  skew : {
+    title: "Skew",
+    options: {  },
+    calculation: function(data) {
+      try {
+        return "[skew]";
+      } catch(e) {
+        return "[error]";
+      }
+    }
+  },
+  jargueBeta : {
+    title: "Jarque Beta",
+    options: {  },
+    calculation: function(data) {
+      try {
+        return "[jarqueBeta]";
+      } catch(e) {
+        return "[error]";
+      }
+    }
+  },
 };
 
 var calculator = {
@@ -150,8 +229,8 @@ var calculator = {
       var link = $(document.createElement("a"));
       link.html(calculations[k].title);
       link.attr("id", calculations[k].title.replace(/ /g,"_"));
-      link.css("font-weight", "bold");
       link.attr("key", k);
+      link.attr("class", "calclink");
       link.click(function() {
         var k = $(this).attr("key");
         // display dialog
