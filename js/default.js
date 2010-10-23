@@ -203,7 +203,7 @@ var tabler = {
 var grapher = {
   showGraph : function() {
     $("#graphHolder").html("");
-    var data = [ { color: "#1fcd1f", data: appdata.basicHistoricalData } ];
+    var data = [ { color: "#1fcd1f", data: appdata.basicHistoricalData, label: "price" } ];
     var options = {
       xaxis: {
         mode: "time",

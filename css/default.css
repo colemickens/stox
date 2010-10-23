@@ -50,6 +50,17 @@ html, body {
   padding: 5px;
 }
 
+.calclink {
+  border-bottom: 1px dotted #000;
+  font-weight: bold;
+}
+
+.calclink:hover {
+  border-bottom: 1px solid #1fcd1f;
+  color: #1fcd1f; 
+  cursor: pointer;
+}
+
 #graphHolder {
   height: 100%;
   width: 100%;
