@@ -1,5 +1,5 @@
 
-	//CORRECT
+	
 	function meanRateOfReturn(){
 		var current = appdata.historicalData.length-1;
 		var meanRoR = 0;
@@ -30,7 +30,6 @@
 		return RoR;
 	}
 
-	//CORRECT
 	function standardDeviation(periods){
 		var current = appdata.historicalData.length-1;
 		var sum = 0;
@@ -87,7 +86,6 @@
 		return annualSTDV;
 	}
 	
-	//CORRECT
 	function sharpeRatio(riskFreeRate){
 		var R = annualizedMean();
 		var sigma = annualizedStandardDeviation();
@@ -95,7 +93,6 @@
 		return sharpe;
 	}
 	
-	//CORRECT
 	function relativeStrengthIndex(periods){
 	//RSI > 70 is overbought, RSI < 30 is oversold
 	//default of 14 periods
@@ -137,7 +134,6 @@
 		return RSI;
 	}
 
-	//CORRECT
 	function simpleMovingAverage(periods, historic){
 		var sum = 0;
 		var current = appdata.historicalData.length-1;
@@ -152,7 +148,6 @@
 		return SMA;
 	}
 	
-	//CORRECT
 	function exponentialMovingAverage(periods){
 		var current = appdata.historicalData.length-1;
 		var EMAprevious = simpleMovingAverage(periods, current-periods);
@@ -164,7 +159,6 @@
 		return EMA;
 	}
 
-	//CORRECT
 	function movingAverageConvergenceDivergence(periods1, periods2, periods3){
 		//default to 12 day and 26 day
 		//periods1 < periods2
@@ -181,7 +175,6 @@
 		return results;
 	}
 	
-	//CORRECT
 	function bollingerBands(periods){
 		//default to 20
 		var current = appdata.historicalData.length-1;
