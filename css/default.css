@@ -48,6 +48,7 @@ html, body {
   border-left: 2px solid #000;
   float: left;
   padding: 5px;
+  overflow: auto;
 }
 
 .calclink {

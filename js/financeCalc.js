@@ -64,7 +64,6 @@ function standardDeviation(periods, dataSet) { // <-- use
   var standardDev = Math.sqrt(deviants/periods);
   return standardDev;
 }
-	
 	function standardDeviationRoR(){
 		var current = appdata.stockPrices.length-1;
 		var sum = 0;
@@ -108,7 +107,6 @@ function standardDeviation(periods, dataSet) { // <-- use
 		return annualSTDV;
 	}
 	
-	//CORRECT
 	function sharpeRatio(riskFreeRate){
 		var R = annualizedMean();
 		var sigma = annualizedStandardDeviation();
@@ -116,7 +114,6 @@ function standardDeviation(periods, dataSet) { // <-- use
 		return sharpe;
 	}
 	
-	//CORRECT
 	function relativeStrengthIndex(periods){
 	//RSI > 70 is overbought, RSI < 30 is oversold
 	//default of 14 periods
@@ -158,7 +155,6 @@ function standardDeviation(periods, dataSet) { // <-- use
 		return RSI;
 	}
 
-	//CORRECT
 	function simpleMovingAverage(periods, historic){
 		var sum = 0;
 		var current = appdata.stockPrices.length-1;
@@ -173,7 +169,6 @@ function standardDeviation(periods, dataSet) { // <-- use
 		return SMA;
 	}
 	
-	//CORRECT
 	function exponentialMovingAverage(periods){
 		var current = appdata.stockPrices.length-1;
 		var EMAprevious = simpleMovingAverage(periods, current-periods);
@@ -185,7 +180,6 @@ function standardDeviation(periods, dataSet) { // <-- use
 		return EMA;
 	}
 
-	//CORRECT
 	function movingAverageConvergenceDivergence(periods1, periods2, periods3){
 		//default to 12 day and 26 day
 		//periods1 < periods2
@@ -202,7 +196,6 @@ function standardDeviation(periods, dataSet) { // <-- use
 		return results;
 	}
 	
-	//CORRECT
 	function bollingerBands(periods){
 		//default to 20
 		var current = appdata.stockPrices.length-1;
@@ -308,3 +301,41 @@ function variance(values) {
   variance /= values.length;
   return variance;
 }
+	
+	function skew(){
+		var current = appdata.historicalData.length-1;
+		var sum = 0;
+		for(var i = current; i>=0; i--){
+			sum += appdata.historicalData[i].price;
+		}
+		var mean = sum/appdata.historicalData.length;
+		var deviants = 0;
+		var cubeddeviants = 0;
+		for(var i = current; i>=0; i--){
+			deviants += Math.pow((appdata.historicalData[i].price-mean), 2);
+			cubeddeviants += Math.pow((appdata.historicalData[i].price-mean), 3);
+		}
+		var standardDev = Math.sqrt(deviants/appdata.historicalData.length);
+		var skew = (cubeddeviants/appdata.historicalData.length)/((appdata.historicalData.length-1)*Math.pow(standardDev, 3));
+		return skew;
+	}
+	
+	function excessKurtosis(){
+		var current = appdata.historicalData.length-1;
+		var sum = 0;
+		for(var i = current; i>=0; i--){
+			sum += appdata.historicalData[i].price;
+		}
+		var mean = sum/appdata.historicalData.length;
+		var fourthdeviants = 0;
+		var deviants = 0;
+		for(var i =0; i<current; i++){
+			fourthdeviants += Math.pow((appdata.historicalData[i].price-mean), 4);
+			deviants += Math.pow((appdata.historicalData[i].price-mean), 2);
+		}
+		
+		var meanDevSquared = Math.pow((deviants/appdata.historicalData.length), 2);
+		var kurtosis = (fourthdeviants/meanDevSquared)-3;
+		return kurtosis;
+		
+	}

@@ -204,6 +204,7 @@ var tabler = {
     .attr("cellspacing","0")
     .attr("border","0")
     .attr("class","display")
+	.attr("width", "100%")
     .attr("id","pricesTable");
     
     dialog = $(document.createElement('div'));
