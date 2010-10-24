@@ -63,11 +63,13 @@ var blocker = {
   },
 }
 
+/*
 var init = {
   init : function(indexSymbol) {
     blocker.block("Loading initial data from Yahoo!");
     init.loadConstituents(indexSymbol);
   },
+
 
   loadConstituents : function(indexSymbol) {
     var url = "http://uk.old.finance.yahoo.com/d/quotes.csv?s=" + indexSymbol + "&f=s&e=.csv";
@@ -88,6 +90,7 @@ var init = {
     blocker.unblock();
   }
 }
+*/
 
 var lookuper = {
   lookup : function(symbol) {
@@ -258,7 +261,6 @@ var grapher = {
 }
 
 $(document).ready(function() {
-  init.init("@^GSPC");
   $(window).resize(function() {
     grapher.showGraph();
   });
