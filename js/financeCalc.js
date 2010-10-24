@@ -303,38 +303,38 @@ function variance(values) {
 }
 	
 	function skew(){
-		var current = appdata.historicalData.length-1;
+		var current = appdata.stockPrices.length-1;
 		var sum = 0;
 		for(var i = current; i>=0; i--){
-			sum += appdata.historicalData[i].price;
+			sum += appdata.stockPrices[i].price;
 		}
-		var mean = sum/appdata.historicalData.length;
+		var mean = sum/appdata.stockPrices.length;
 		var deviants = 0;
 		var cubeddeviants = 0;
 		for(var i = current; i>=0; i--){
-			deviants += Math.pow((appdata.historicalData[i].price-mean), 2);
-			cubeddeviants += Math.pow((appdata.historicalData[i].price-mean), 3);
+			deviants += Math.pow((appdata.stockPrices[i].price-mean), 2);
+			cubeddeviants += Math.pow((appdata.stockPrices[i].price-mean), 3);
 		}
-		var standardDev = Math.sqrt(deviants/appdata.historicalData.length);
-		var skew = (cubeddeviants/appdata.historicalData.length)/((appdata.historicalData.length-1)*Math.pow(standardDev, 3));
+		var standardDev = Math.sqrt(deviants/appdata.stockPrices.length);
+		var skew = (cubeddeviants/appdata.stockPrices.length)/((appdata.stockPrices.length-1)*Math.pow(standardDev, 3));
 		return skew;
 	}
 	
 	function excessKurtosis(){
-		var current = appdata.historicalData.length-1;
+		var current = appdata.stockPrices.length-1;
 		var sum = 0;
 		for(var i = current; i>=0; i--){
-			sum += appdata.historicalData[i].price;
+			sum += appdata.stockPrices[i].price;
 		}
-		var mean = sum/appdata.historicalData.length;
+		var mean = sum/appdata.stockPrices.length;
 		var fourthdeviants = 0;
 		var deviants = 0;
 		for(var i =0; i<current; i++){
-			fourthdeviants += Math.pow((appdata.historicalData[i].price-mean), 4);
-			deviants += Math.pow((appdata.historicalData[i].price-mean), 2);
+			fourthdeviants += Math.pow((appdata.stockPrices[i].price-mean), 4);
+			deviants += Math.pow((appdata.stockPrices[i].price-mean), 2);
 		}
 		
-		var meanDevSquared = Math.pow((deviants/appdata.historicalData.length), 2);
+		var meanDevSquared = Math.pow((deviants/appdata.stockPrices.length), 2);
 		var kurtosis = (fourthdeviants/meanDevSquared)-3;
 		return kurtosis;
 		
