@@ -190,11 +190,14 @@ var tabler = {
       ],
       "bJQueryUI": true,
       "sPaginationType": "full_numbers",
+      "bDestroy": true,
+      "bLengthChange": false,
+      "iDisplayLength": 25,
     });
     
     $("#tableDialog").dialog({
-      height: 500,
-      width: 800,
+      height: 700,
+      width: 900,
       modal: true,
     });
   }
