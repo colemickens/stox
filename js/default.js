@@ -1,6 +1,6 @@
 /* TODO
 
- - pretty/basicHistoricalData / historicalData
+ - pretty/basicStockPrices / stockPrices
  - fix table rendering (you know, to make it not look like shit and such
  - redraw flot on resize window
  - sizing/positioning
@@ -17,13 +17,16 @@
  FOR CHRIS
  - show periods in view
 
+
+  Add blocking ot JSONP plugin
 */
 
 var appdata = {
   constituents: [],
-  historicalData: [],
-  basicHistoricalData: [],
-  prettyHistoricalData: [],
+  stockPrices: [],
+  spxPrices: [],
+  basicStockPrices: [],
+  prettyStockPrices: [],
   symbol: "",
   startDate: undefined,
   getFrequency : function() {
@@ -120,26 +123,55 @@ var lookuper = {
 }
 
 var yahoo = {
-  historicalPrices : function() {
+  _blockStatus: false,
+  _unblock: function() {
+    if(yahoo._blockStatus = false) {
+      yahoo._blockStatus = true;
+    } else {
+      grapher.showGraph();
+      calculator.calculate();
+      blocker.unblock();
+    }
+  },
+  _block: function() {
+    yahoo._blockStatus = false;
+    blocker.block("Loading data for " + symbol + " and the S&P 500 from Yahoo!");
+  },
+  _processData: function() {
+  },
+  updatePrices: function() {
+    yahoo._block();
+ 
     var symbol = appdata.symbol;
     var frequency = appdata.frequency;
-    blocker.block("Loading data for " + symbol + " from Yahoo!");
+    var url = _getUrl(symbol);
     var g = $("#frequencySelect").val()[0];
 
-    var url = "http://ichart.finance.yahoo.com/table.csv?s="+symbol+"&g="+g;
+    var url = "http://ichart.finance.yahoo.com/table.csv?g="+g;
     if(appdata.startDate) {
       url += "&a=" + appdata.startDate.getMonth();
       url += "&b=" + appdata.startDate.getDate();
       url += "&c=" + appdata.startDate.getFullYear();
     }
 
-    $.jsonpProxy(url, function(data) {
-      blocker.unblock();
+    var urlStock = _url + "&s=" + symbol;
+    var urlSpx = _url + "&s=^GSPC";
+
+    $.jsonpProxy(urlStock, function(data) {
+      appdata.stockPrices = new Array();
+      appdata.basicStockPrices = new Array();
+      appdata.prettyStockPrices = new Array();
+
+    });
+    
+    $.jsonpProxy(urlSpx, function(data) {
+      appdata.
+    });
 
       var rows = data.split("\n").reverse();
-      appdata.historicalData = new Array();
-      appdata.basicHistoricalData = new Array();
-      appdata.prettyHistoricalData = new Array();
+      appdata.stockPrices = new Array();
+      appdata.basicStockPrices = new Array();
+      appdata.prettyStockPrices = new Array();
 
       for(var i=1; i<rows.length-1; i++) {
         var cols = rows[i].split(",");
@@ -149,18 +181,18 @@ var yahoo = {
         };
         var basicEntry = new Array(Date.parse(cols[0]), parseFloat(cols[6]));
         var prettyEntry = new Array(cols[0], parseFloat(cols[6]));
-        appdata.historicalData.push(entry);
-        appdata.basicHistoricalData.push(basicEntry);
-        appdata.prettyHistoricalData.push(prettyEntry);
+        appdata.stockPrices.push(entry);
+        appdata.basicStockPrices.push(basicEntry);
+        appdata.prettyStockPrices.push(prettyEntry);
       }
       // set the default start date
       if(appdata.startDate == undefined) {
-        console.log(appdata.historicalData[0].date + ": " + appdata.historicalData[0].price);
-        appdata.startDate = appdata.historicalData[0].date;
+        console.log(appdata.stockPrices[0].date + ": " + appdata.stockPrices[0].price);
+        appdata.startDate = appdata.stockPrices[0].date;
         $("#startDatePicker").datepicker("setDate", new Date(appdata.startDate));
       }
-      grapher.showGraph();
-      calculator.calculate();
+
+      yahoo._unblock();
     });
   }
 }
@@ -182,7 +214,7 @@ var tabler = {
     $("body").append(dialog);
 
     $("#pricesTable").dataTable( {
-      "aaData": appdata.prettyHistoricalData,
+      "aaData": appdata.prettyStockPrices,
       "aoColumns": [
         { "sTitle": "Date" },
         { "sTitle": "Adjusted Closing Price" },
@@ -205,7 +237,7 @@ var tabler = {
 var grapher = {
   showGraph : function() {
     $("#graphHolder").html("");
-    var data = [ { color: "#1fcd1f", data: appdata.basicHistoricalData, label: "price" } ];
+    var data = [ { color: "#1fcd1f", data: appdata.basicStockPrices, label: "price" } ];
     var options = {
       xaxis: {
         mode: "time",

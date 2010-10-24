@@ -1,82 +1,103 @@
+// UTILITY
+function average(input) {
+  var sum = 0;
+  for(var i=0; i<input.length; i++) {
+    sum += input[i];
+  }
+  return sum/i;
+}
 
-	//CORRECT
-	function meanRateOfReturn(){
-		var current = appdata.historicalData.length-1;
-		var meanRoR = 0;
-		if (appdata.log){
-			for(var i = current; i>0; i--){
-				var Vf = appdata.historicalData[i].price;
-				var Vi = appdata.historicalData[i-1].price;
-				meanRoR+=logRoR(Vf, Vi);
-			}
-		}else{
-			for(var i = current; i>0; i--){
-				var Vf = appdata.historicalData[i].price;
-				var Vi = appdata.historicalData[i-1].price;
-				meanRoR+=simpleRoR(Vf, Vi);
-			}
-		}
-		meanRoR = (1/appdata.historicalData.length)*meanRoR;
-		return meanRoR;
-	}
-	
-	function simpleRoR(Vf, Vi){
-		var RoR = (Vf-Vi)/Vi;
-		return RoR;
-	}
-	
-	function logRoR(Vf, Vi){
-		var RoR = Math.log(Vf/Vi);
-		return RoR;
-	}
+// DEPRECATED
+function meanRateOfReturn() {
+  console.log("Deprecated");
+  return meanRateOfReturn(appdata.stockPrices);
+}
 
-	//CORRECT
-	function standardDeviation(periods){
-		var current = appdata.historicalData.length-1;
-		var sum = 0;
-		for(var i = current; i>current-periods; i--){
-			sum += appdata.historicalData[i].price;
-		}
-		var mean = sum/periods;
-		var deviants = 0;
-		for(var i = current; i>current-periods; i--){
-			deviants += Math.pow((appdata.historicalData[i].price-mean), 2);
-		}
-		var standardDev = Math.sqrt(deviants/periods);
-		return standardDev;
-	}
+// CALCULATION: ? TEST
+function meanRateOfReturn(dataSet){
+  return average(getRateOfReturns(dataSet);
+}
+
+// UTILITY
+function getRateOfReturns(dataSet) {
+  var current = dataSet.length-1;
+  var arrayOfRateOfReturns = [];
+  var rorMethod = (appdata.log ? logRoR : simpleRoR);
+  for(var i=current, var j=0; i>0; i--, j++) {
+    var Vf = dataSet[i].price;
+    var Vi = dataSet[i-1].price;
+    arrayOfRateOfReturns[j] = rorMethod(Vf, Vi);
+  }
+  return arrayOfRateOfReturns;
+}
+
+// UTILITY
+function simpleRoR(Vf, Vi){
+  var RoR = (Vf-Vi)/Vi;
+  return RoR;
+}
+
+// UTILITY	
+function logRoR(Vf, Vi){
+  var RoR = Math.log(Vf/Vi);
+  return RoR;
+}
+
+// DEPRECATED
+function standardDeviation(periods) {
+  console.log("Deprecated");
+  return standardDeviation(periods, appdata.stockPrices);
+}
+
+// CALCULATION/UTILITY : ? CHECK
+function standardDeviation(periods, dataSet) { // <-- use
+  var current = dataSet.length-1;
+  var sum = 0;
+  for(var i = current; i>current-periods; i--){
+    sum += dataSet[i].price;
+  }
+  var mean = sum/periods;
+  var deviants = 0;
+  for(var i = current; i>current-periods; i--){
+    deviants += Math.pow((dataSet[i].price-mean), 2);
+  }
+  var standardDev = Math.sqrt(deviants/periods);
+  return standardDev;
+}
 	
 	function standardDeviationRoR(){
-		var current = appdata.historicalData.length-1;
+		var current = appdata.stockPrices.length-1;
 		var sum = 0;
-		if(appdata.log){
+		var rorMethod = (appdata.log ? logRoR : simpleRoR); 
+//		if(appdata.log){
 			for(var i = current; i>0; i--){
-				sum += logRoR(appdata.historicalData[i].price, appdata.historicalData[i-1].price);
+				sum += logRoR(appdata.stockPrices[i].price, appdata.stockPrices[i-1].price);
 			}
-			var mean = sum/appdata.historicalData.length;
+			var mean = sum/appdata.stockPrices.length;
 			var deviants = 0;
 			for(var i = current; i>0; i--){
-				deviants += Math.pow((logRoR(appdata.historicalData[i].price, appdata.historicalData[i-1].price)-mean), 2);
+				deviants += Math.pow((rorMethod(appdata.stockPrices[i].price, appdata.stockPrices[i-1].price)-mean), 2);
+//				deviants += Math.pow((simpleRoR(appdata.historicalData[i].price, appdata.historicalData[i-1].price)-mean), 2);
 			}
-			var standardDev = Math.sqrt(deviants/appdata.historicalData.length);
-		}else{
-			for(var i = current; i>0; i--){
-				sum += simpleRoR(appdata.historicalData[i].price, appdata.historicalData[i-1].price);
-			}
-			var mean = sum/appdata.historicalData.length;
-			var deviants = 0;
-			for(var i = current; i>0; i--){
-				deviants += Math.pow((simpleRoR(appdata.historicalData[i].price, appdata.historicalData[i-1].price)-mean), 2);
-			}
-			var standardDev = Math.sqrt(deviants/appdata.historicalData.length);
-		}
+			var standardDev = Math.sqrt(deviants/appdata.stockPrices.length);
+//		}else{
+//			for(var i = current; i>0; i--){
+//				sum += simpleRoR(appdata.historicalData[i].price, appdata.historicalData[i-1].price);
+//			}
+//			var mean = sum/appdata.historicalData.length;
+//			var deviants = 0;
+//			for(var i = current; i>0; i--){
+//				deviants += Math.pow((simpleRoR(appdata.historicalData[i].price, appdata.historicalData[i-1].price)-mean), 2);
+//			}
+//			var standardDev = Math.sqrt(deviants/appdata.historicalData.length);
+//		}
 		return standardDev;
 	}
 	
 	
 	function annualizedMean(){
 		var frequency = appdata.getFrequency();
-		var annualMean = meanRateOfReturn()*frequency;
+		var annualMean = meanRateOfReturn(appdata.stockPrices)*frequency;
 		return annualMean;
 	}
 	
@@ -100,12 +121,12 @@
 	//RSI > 70 is overbought, RSI < 30 is oversold
 	//default of 14 periods
 	
-		var current = appdata.historicalData.length-1;
+		var current = appdata.stockPrices.length-1;
 		var InitialGain = 0;
 		var InitialLoss = 0;
 		
 		for(var i = periods; i>0; i--){
-			var change = appdata.historicalData[i].price - appdata.historicalData[i-1].price;
+			var change = appdata.stockPrices[i].price - appdata.stockPrices[i-1].price;
 			if(change >= 0){
 				InitialGain += change;
 			}else{
@@ -121,7 +142,7 @@
 			var currentGain = 0;
 			var currentLoss = 0;
 		
-				var change = appdata.historicalData[i].price - appdata.historicalData[i-1].price;
+				var change = appdata.stockPrices[i].price - appdata.stockPrices[i-1].price;
 				if(change >= 0){
 					currentGain += change;
 				}else{
@@ -140,12 +161,12 @@
 	//CORRECT
 	function simpleMovingAverage(periods, historic){
 		var sum = 0;
-		var current = appdata.historicalData.length-1;
+		var current = appdata.stockPrices.length-1;
 		if(historic != current){
 			current = historic;
 		}
 		for(var i = current; i>current-periods; i--){
-			sum += appdata.historicalData[i].price;
+			sum += appdata.stockPrices[i].price;
 			
 		}
 		var SMA = sum/periods;
@@ -154,11 +175,11 @@
 	
 	//CORRECT
 	function exponentialMovingAverage(periods){
-		var current = appdata.historicalData.length-1;
+		var current = appdata.stockPrices.length-1;
 		var EMAprevious = simpleMovingAverage(periods, current-periods);
 		var multiplier = 2/(periods+1);
 		for(var i = current-periods; i<=current; i++){
-			EMAprevious = ((appdata.historicalData[i].price-EMAprevious)*multiplier)+EMAprevious;
+			EMAprevious = ((appdata.stockPrices[i].price-EMAprevious)*multiplier)+EMAprevious;
 		}
 		var EMA = EMAprevious;
 		return EMA;
@@ -184,7 +205,7 @@
 	//CORRECT
 	function bollingerBands(periods){
 		//default to 20
-		var current = appdata.historicalData.length-1;
+		var current = appdata.stockPrices.length-1;
 		var middleBand = simpleMovingAverage(periods, current);
 		var upperBand = middleBand + (standardDeviation(periods)*2);
 		var lowerBand = middleBand - (standardDeviation(periods)*2);
@@ -196,3 +217,94 @@
 		
 		return bands;
 	}
+
+// CALCULATION
+function autocorrelationValue(dataSet) {
+  var rateOfReturns = getRateOfReturns(dataSet);
+  var N = rateOfReturns.length;
+  var m = 1;
+  var xbar = average(rateOfReturns);
+  var autocovariance = 0;
+  for(var i=0; i<(N-m); i++) {
+    autocovariance += ((rateOfReturns[i] - xbar)*(rateOfReturns[i+m]-xbar))
+  }
+  autocovariance /= N;
+  
+  var variance = variance(rateOfReturns);
+
+  
+  var autocorrelation = autocovariance/variance;
+  return autocorrelation;
+}
+
+// UTILITY - DISGUSTING HACK
+function adapter(input) {
+  var retVal;
+  for(var i=0; i<input.length; i++) {
+    retVal[i].price = input[i];
+  }
+  return retVal;
+}
+
+// CALCULATION
+function correlationValue() {
+  var stockRateOfReturns = getRateOfReturns(appdata.historicalPrices);
+  var spxRateOfReturns = getRateOfReturns(appdata.spxPrices);
+  var N = stockRateOfReturns.length - 1;
+  var xbar = average(stockRateOfReturns);
+  var ybar = average(spxRateOfReturns);
+  // var periods = 1; // ??????
+  var periods = stockRateOfReturns.length;
+  var Sx = standardDeviation(periods, adapter(stockRateOfReturns));
+  var Sy = standardDeviation(periods, adapter(spxRateOfReturns));
+  var correlation = 0;
+  for(var i=0; i<N; i++) {
+    correlation += (stockRateOfReturns[i]-xbar)*(spxRateOfReturns[i]-ybar);
+  }
+  correlation /= (N*Sx*Sy);
+  return correlation;
+}
+
+// CALCULATION
+function keckBeta() {
+  var correlation = correlationValue();
+  var stdDevStock = standardDeviation(appdata.stockPrices, appdata.stockPrices.length);
+  var stdDevSpx = standardDeviation(appdata.spxPrices, appdata.spxPrices.length);
+
+  var correlation * (stdDevStock/stdDevSpx);
+}
+
+// CALCULATION
+function internetBeta() {
+  var numerator = covariance(appdata.stockPrices, appdata.spxPrices);
+  var denominator = variance(appdata.spxPrices);
+
+  var beta = numerator/denominator;
+}
+
+// UTILITY
+function covariance(x, y) {
+  var N = x.length;
+
+  var xbar = average(x);
+  var ybar = average(y);
+
+  var xybar;
+  for(var i=0; i<N-1; i++) {
+    xybar += (x[i] * y[i]);
+  }
+  xybar /= N;
+
+  var covariance = xybar - (xbar * ybar);
+  return covariance;
+}
+
+// UTILITY
+function variance(values) {
+  var variance = 0;
+  for(var i=0; i<values.length; i++) {
+    variance += Math.pow((rateOfReturns[i] - xbar), 2);
+  }
+  variance /= values.length;
+  return variance;
+}

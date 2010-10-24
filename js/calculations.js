@@ -3,7 +3,7 @@ var calculations = {
     title: "Periods Shown",
     options: {  },
     calculation: function(data) {
-      return appdata.historicalData.length;
+      return appdata.stockPrices.length;
     }
   },
   simpleMovingAverage : {
@@ -11,7 +11,7 @@ var calculations = {
     options: { periods: 4 },
     calculation: function(data) {
       try {
-        var answer = simpleMovingAverage(data.periods, appdata.historicalData.length-1);
+        var answer = simpleMovingAverage(data.periods, appdata.stockPrices.length-1);
         return Math.round(answer * 100) / 100;
       } catch(e) {
         return "[error]";
@@ -132,7 +132,7 @@ var calculations = {
     options: { /* periods: 10 */ },
     calculation: function(data) {
       try{
-        var answer = meanRateOfReturn(/*data.periods, appdata.historicalData.length-1*/);
+        var answer = meanRateOfReturn(/*data.periods, appdata.stockPrices.length-1*/);
         answer = answer*100;
         return Math.round(answer*100)/100 + "%";
       } catch(e) {
@@ -144,27 +144,43 @@ var calculations = {
     title: "Autocorrelation of Stock",
     options: {  },
     calculation: function(data) {
-
+      try {
+        return autocorrelationValue(appdata.historicalPrices);
+      } catch(e) {
+        return "[error]";
+      }
     }
   },
   autocorrelationOfSpx: {
     title: "Autocorrelation of SPX",
     options: {  },
     calculation: function(data) {
+      try {
+        return autocorrelationValue(appdata.spxPrices);
+      } catch(e) {
+        return "[error]";
+      }
     }
   },
-  correlationBetweenReturnRatesOfStock: {
-    title: "Correlation b/w rr of Stock",
+  correlationBetweenReturnRates: {
+    title: "Correlation between Return Rates",
     options: {  },
     calculation: function(data) {
+      try {
+        return correlationValue();
+      } catch(e) {
+        return "[error]";
+      }
     }
   },
+/*
   correlationBetweenReturnRatesOfSpx: {
     title: "Correlation b/w rr of SPX",
     options: {  },
     calculation: function(data) {
     }
   },
+*/
   beta : {
     title: "Beta",
     options: {  },
@@ -208,12 +224,12 @@ var calculations = {
       }
     }
   },
-  jargueBeta : {
-    title: "Jarque Beta",
+  jargueBera : {
+    title: "Jarque Bera",
     options: {  },
     calculation: function(data) {
       try {
-        return "[jarqueBeta]";
+        return "[jarqueBera]";
       } catch(e) {
         return "[error]";
       }
