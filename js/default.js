@@ -102,18 +102,12 @@ var lookuper = {
 }
 
 var yahoo = {
-  _blockStatus: false,
   _unblock: function() {
-    if(yahoo._blockStatus == false) {
-      yahoo._blockStatus = true;
-    } else {
-      grapher.showGraph();
-      calculator.calculate();
-      blocker.unblock();
-    }
+    grapher.showGraph();
+    calculator.calculate();
+    blocker.unblock();
   },
   _block: function(symbol) {
-    yahoo._blockStatus = false;
     blocker.block("Loading data for " + symbol + " and the S&P 500 from Yahoo!");
   },
   _processData: function(data) {
@@ -128,43 +122,37 @@ var yahoo = {
       };
       processedData.push(entry);
     }
-
     return processedData;
   },
-  updatePrices: function() {
-    var symbol = appdata.symbol;
-    var frequency = appdata.frequency;
+  _getUrl: function(symbol) {
     var g = $("#frequencySelect").val()[0];
-    
-    yahoo._block(symbol);
-
-    var url = "http://ichart.finance.yahoo.com/table.csv?g="+g;
+    var url = "http://ichart.finance.yahoo.com/table.csv?s="+symbol+"&g="+g;
     if(appdata.startDate) {
       url += "&a=" + appdata.startDate.getMonth();
       url += "&b=" + appdata.startDate.getDate();
       url += "&c=" + appdata.startDate.getFullYear();
     }
+    return url;
+  },
+  updatePrices: function() {
+    var symbol = appdata.symbol;
+    yahoo._block(symbol);
 
-    var urlStock = url + "&s=" + symbol;
-    var urlSpx = url + "&s=^GSPC";
-
-    $.jsonpProxy(urlStock, function(data) {
+    $.jsonpProxy(yahoo._getUrl(symbol), function(data) {
       appdata.stockPrices = yahoo._processData(data);
       
       // set the default start date
-      if(appdata.startDate == undefined) {
-        console.log(appdata.stockPrices[0].date + ": " + appdata.stockPrices[0].price);
-        appdata.startDate = appdata.stockPrices[0].date;
-        $("#startDatePicker").datepicker("setDate", new Date(appdata.startDate));
-      }
+      appdata.startDate = appdata.stockPrices[0].date;
+      $("#startDatePicker").datepicker("setDate", appdata.startDate);
+
+      $.jsonpProxy(yahoo._getUrl("^GSPC"), function(data) {
+        appdata.spxPrices = yahoo._processData(data);
+        yahoo._unblock();
+      });
 
       yahoo._unblock();
     });
     
-    $.jsonpProxy(urlSpx, function(data) {
-      appdata.spxPrices = yahoo._processData(data);
-      yahoo._unblock();
-    });
   }
 }
 
@@ -250,7 +238,6 @@ $(document).ready(function() {
   }).css("width", "500px");
 
   $("#showTableButton").click(function() {
-    console.log("showing table");
     tabler.showTable();
   });
 

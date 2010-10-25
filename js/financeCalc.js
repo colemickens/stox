@@ -4,17 +4,14 @@ function average(input) {
   for(var i=0; i<input.length; i++) {
     sum += input[i];
   }
-  return sum/i;
-}
-
-// DEPRECATED
-function meanRateOfReturn() {
-  console.log("Deprecated");
-  return meanRateOfReturn(appdata.stockPrices);
+  return sum/input.length;
 }
 
 // CALCULATION: ? TEST
 function meanRateOfReturn(dataSet){
+  if(dataSet == undefined) {
+    console.log("error!!!");
+  }
   return average(getRateOfReturns(dataSet));
 }
 
