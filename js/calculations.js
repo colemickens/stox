@@ -132,7 +132,7 @@ var calculations = {
     options: { /* periods: 10 */ },
     calculation: function(data) {
       try{
-        var answer = meanRateOfReturn(/*data.periods, appdata.stockPrices.length-1*/);
+        var answer = meanRateOfReturn(appdata.stockPrices);
         answer = answer*100;
         return Math.round(answer*100)/100 + "%";
       } catch(e) {

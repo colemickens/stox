@@ -28,32 +28,6 @@ var appdata = {
   },
   log: true,
 }
-
-var blocker = {
-  block : function(message) {
-    dialog = $(document.createElement('div'));
-    dialog.attr("id", "blockerModalDialog");
-    dialog.attr("title", "Loading");
-    dialog.html(message);
-    
-    $("body").append(dialog);
-    dialog.dialog({
-      height: 140,
-      modal: true,
-      closeOnEscape: false,
-      open: function(event, ui) { $(".ui-dialog-titlebar-close").hide(); }
-    });
-  },
-
-  message : function(msg) {
-     dialog.html(msg);
-  },
-
-  unblock : function() {
-    dialog.remove();
-  },
-}
-
 /*
 var init = {
   init : function(indexSymbol) {

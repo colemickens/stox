@@ -43,14 +43,11 @@ function logRoR(Vf, Vi){
   return RoR;
 }
 
-// DEPRECATED
-function standardDeviation(periods) {
-  console.log("Deprecated");
-  return standardDeviation(periods, appdata.stockPrices);
-}
-
 // CALCULATION/UTILITY : ? CHECK
 function standardDeviation(periods, dataSet) { // <-- use
+  if(dataSet == undefined) {
+    dataSet = appdata.stockPrices;
+  }
   var current = dataSet.length-1;
   var sum = 0;
   for(var i = current; i>current-periods; i--){
