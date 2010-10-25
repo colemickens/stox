@@ -339,3 +339,9 @@ function variance(values) {
 		return kurtosis;
 		
 	}
+	
+	function jarqueBera(){
+		var n = 2; //degree of freedom
+		var JB = (n/6)*(Math.pow(skew(), 2) + (.25*Math.pow(excessKurtosis(), 2)));
+		return JB;
+	}
