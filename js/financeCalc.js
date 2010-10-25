@@ -207,35 +207,44 @@ function standardDeviation(periods, dataSet) { // <-- use
 
 // CALCULATION
 function autocorrelationValue(dataSet) {
-  var rateOfReturns = getRateOfReturns(dataSet);
-  var N = rateOfReturns.length;
+  var x = getRateOfReturns(dataSet);
+  var xbar = average(x);
+  var N = x.length;
   var m = 1;
-  var xbar = average(rateOfReturns);
+
   var autocovariance = 0;
   for(var i=0; i<(N-m); i++) {
-    autocovariance += ((rateOfReturns[i] - xbar)*(rateOfReturns[i+m]-xbar))
+    autocovariance += ((x[i] - xbar)*(x[i+m]-xbar))
   }
   autocovariance /= N;
   
-  var variance = variance(rateOfReturns);
-
+  var varianceValue = variance(x);
   
-  var autocorrelation = autocovariance/variance;
+  var autocorrelation = autocovariance/varianceValue;
   return autocorrelation;
 }
 
 // UTILITY - DISGUSTING HACK
 function adapter(input) {
-  var retVal;
+  var retVal = new Array();
   for(var i=0; i<input.length; i++) {
-    retVal[i].price = input[i];
+    var entry = { price: input[i] };
+    retVal.push(entry);
+  }
+  return retVal;
+}
+
+function rAdapter(input) {
+  var retVal = new Array();
+  for(var i=0; i<input.length; i++) {
+    retVal.push(input[i].price);
   }
   return retVal;
 }
 
 // CALCULATION
 function correlationValue() {
-  var stockRateOfReturns = getRateOfReturns(appdata.historicalPrices);
+  var stockRateOfReturns = getRateOfReturns(appdata.stockPrices);
   var spxRateOfReturns = getRateOfReturns(appdata.spxPrices);
   var N = stockRateOfReturns.length - 1;
   var xbar = average(stockRateOfReturns);
@@ -253,10 +262,11 @@ function correlationValue() {
 }
 
 // CALCULATION
+// the std dev's may need to be of RoRs instead of prices
 function keckBeta() {
   var correlation = correlationValue();
-  var stdDevStock = standardDeviation(appdata.stockPrices, appdata.stockPrices.length);
-  var stdDevSpx = standardDeviation(appdata.spxPrices, appdata.spxPrices.length);
+  var stdDevStock = standardDeviation(appdata.stockPrices.length-1, appdata.stockPrices);
+  var stdDevSpx = standardDeviation(appdata.spxPrices.length-1, appdata.spxPrices);
 
   var beta = correlation * (stdDevStock/stdDevSpx);
   return beta;
@@ -264,9 +274,8 @@ function keckBeta() {
 
 // CALCULATION
 function internetBeta() {
-  var numerator = covariance(appdata.stockPrices, appdata.spxPrices);
-  var denominator = variance(appdata.spxPrices);
-
+  var numerator = covariance(rAdapter(appdata.stockPrices), rAdapter(appdata.spxPrices));
+  var denominator = variance(rAdapter(appdata.spxPrices));
   var beta = numerator/denominator;
   return beta;
 }
@@ -278,7 +287,7 @@ function covariance(x, y) {
   var xbar = average(x);
   var ybar = average(y);
 
-  var xybar;
+  var xybar = 0;
   for(var i=0; i<N-1; i++) {
     xybar += (x[i] * y[i]);
   }
@@ -291,8 +300,10 @@ function covariance(x, y) {
 // UTILITY
 function variance(values) {
   var variance = 0;
+  var xbar = average(values);
+  var x = values;
   for(var i=0; i<values.length; i++) {
-    variance += Math.pow((rateOfReturns[i] - xbar), 2);
+    variance += Math.pow((x[i] - xbar), 2);
   }
   variance /= values.length;
   return variance;

@@ -149,8 +149,6 @@ var yahoo = {
         appdata.spxPrices = yahoo._processData(data);
         yahoo._unblock();
       });
-
-      yahoo._unblock();
     });
     
   }
