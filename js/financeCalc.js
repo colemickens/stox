@@ -15,7 +15,7 @@ function meanRateOfReturn() {
 
 // CALCULATION: ? TEST
 function meanRateOfReturn(dataSet){
-  return average(getRateOfReturns(dataSet);
+  return average(getRateOfReturns(dataSet));
 }
 
 // UTILITY
@@ -23,7 +23,7 @@ function getRateOfReturns(dataSet) {
   var current = dataSet.length-1;
   var arrayOfRateOfReturns = [];
   var rorMethod = (appdata.log ? logRoR : simpleRoR);
-  for(var i=current, var j=0; i>0; i--, j++) {
+  for(var i=current, j=0; i>0; i--, j++) {
     var Vf = dataSet[i].price;
     var Vi = dataSet[i-1].price;
     arrayOfRateOfReturns[j] = rorMethod(Vf, Vi);
@@ -264,7 +264,8 @@ function keckBeta() {
   var stdDevStock = standardDeviation(appdata.stockPrices, appdata.stockPrices.length);
   var stdDevSpx = standardDeviation(appdata.spxPrices, appdata.spxPrices.length);
 
-  var correlation * (stdDevStock/stdDevSpx);
+  var beta = correlation * (stdDevStock/stdDevSpx);
+  return beta;
 }
 
 // CALCULATION
@@ -273,6 +274,7 @@ function internetBeta() {
   var denominator = variance(appdata.spxPrices);
 
   var beta = numerator/denominator;
+  return beta;
 }
 
 // UTILITY

@@ -1,14 +1,7 @@
 /* TODO
 
- - pretty/basicStockPrices / stockPrices
- - fix table rendering (you know, to make it not look like shit and such
- - redraw flot on resize window
- - sizing/positioning
- - load default date (from stock)
  - disable dates before it
  - frequency, only let them select frequency in start date picker
- - underscores in option/calc names -> " "
- - show input var (periods) next to calc results
 
  - convert to using one list to track prices (And other stuff)
  - multiple (types of) options for config boxes 
@@ -25,8 +18,6 @@ var appdata = {
   constituents: [],
   stockPrices: [],
   spxPrices: [],
-  basicStockPrices: [],
-  prettyStockPrices: [],
   symbol: "",
   startDate: undefined,
   getFrequency : function() {
@@ -92,6 +83,17 @@ var init = {
 }
 */
 
+
+var utility = {
+  flatten: function(data) {
+    var tableData = new Array();
+    for(var i=0; i<data.length; i++) {
+      tableData.push(new Array(data[i].date, data[i].price));
+    }
+    return tableData;
+  },
+};
+
 var lookuper = {
   lookup : function(symbol) {
     var url = "http://d.yimg.com/autoc.finance.yahoo.com/autoc?query="+symbol+"&callback=YAHOO.Finance.SymbolSuggest.ssCallback";
@@ -115,7 +117,7 @@ var lookuper = {
         select: function(event, ui) {
           selectedLabel = ui.item.label;
           appdata.symbol = ui.item.value;
-          yahoo.historicalPrices();
+          yahoo.updatePrices();
         },
         close: function(event, ui) {
           $("#symbolLookupBox").val(selectedLabel);
@@ -128,7 +130,7 @@ var lookuper = {
 var yahoo = {
   _blockStatus: false,
   _unblock: function() {
-    if(yahoo._blockStatus = false) {
+    if(yahoo._blockStatus == false) {
       yahoo._blockStatus = true;
     } else {
       grapher.showGraph();
@@ -136,19 +138,31 @@ var yahoo = {
       blocker.unblock();
     }
   },
-  _block: function() {
+  _block: function(symbol) {
     yahoo._blockStatus = false;
     blocker.block("Loading data for " + symbol + " and the S&P 500 from Yahoo!");
   },
-  _processData: function() {
+  _processData: function(data) {
+    var processedData = new Array();
+    var rows = data.split("\n").reverse();
+    
+    for(var i=1; i<rows.length-1; i++) {
+      var cols = rows[i].split(",");
+      var entry = {
+        date: new Date(cols[0]),
+        price: parseFloat(cols[6]), 
+      };
+      processedData.push(entry);
+    }
+
+    return processedData;
   },
   updatePrices: function() {
-    yahoo._block();
- 
     var symbol = appdata.symbol;
     var frequency = appdata.frequency;
-    var url = _getUrl(symbol);
     var g = $("#frequencySelect").val()[0];
+    
+    yahoo._block(symbol);
 
     var url = "http://ichart.finance.yahoo.com/table.csv?g="+g;
     if(appdata.startDate) {
@@ -157,37 +171,12 @@ var yahoo = {
       url += "&c=" + appdata.startDate.getFullYear();
     }
 
-    var urlStock = _url + "&s=" + symbol;
-    var urlSpx = _url + "&s=^GSPC";
+    var urlStock = url + "&s=" + symbol;
+    var urlSpx = url + "&s=^GSPC";
 
     $.jsonpProxy(urlStock, function(data) {
-      appdata.stockPrices = new Array();
-      appdata.basicStockPrices = new Array();
-      appdata.prettyStockPrices = new Array();
-
-    });
-    
-    $.jsonpProxy(urlSpx, function(data) {
-      appdata.
-    });
-
-      var rows = data.split("\n").reverse();
-      appdata.stockPrices = new Array();
-      appdata.basicStockPrices = new Array();
-      appdata.prettyStockPrices = new Array();
-
-      for(var i=1; i<rows.length-1; i++) {
-        var cols = rows[i].split(",");
-        var entry = {
-          date: Date.parse(cols[0]),
-          price: parseFloat(cols[6]), 
-        };
-        var basicEntry = new Array(Date.parse(cols[0]), parseFloat(cols[6]));
-        var prettyEntry = new Array(cols[0], parseFloat(cols[6]));
-        appdata.stockPrices.push(entry);
-        appdata.basicStockPrices.push(basicEntry);
-        appdata.prettyStockPrices.push(prettyEntry);
-      }
+      appdata.stockPrices = yahoo._processData(data);
+      
       // set the default start date
       if(appdata.startDate == undefined) {
         console.log(appdata.stockPrices[0].date + ": " + appdata.stockPrices[0].price);
@@ -197,17 +186,26 @@ var yahoo = {
 
       yahoo._unblock();
     });
+    
+    $.jsonpProxy(urlSpx, function(data) {
+      appdata.spxPrices = yahoo._processData(data);
+      yahoo._unblock();
+    });
   }
 }
 
 var tabler = {
-  showTable : function() {
+  _renderDate: function(date) {
+  },
+  showTable: function() {
+    var tableData = utility.flatten(appdata.stockPrices);
+
     var table = $(document.createElement("table"))
     .attr("cellpadding","0")
     .attr("cellspacing","0")
     .attr("border","0")
     .attr("class","display")
-	.attr("width", "100%")
+    .attr("width", "100%")
     .attr("id","pricesTable");
     
     dialog = $(document.createElement('div'));
@@ -218,11 +216,19 @@ var tabler = {
     $("body").append(dialog);
 
     $("#pricesTable").dataTable( {
-      "aaData": appdata.prettyStockPrices,
+      "aaData": tableData,
       "aoColumns": [
-        { "sTitle": "Date" },
+        { "sTitle": "Date", "sType": "html" },
         { "sTitle": "Adjusted Closing Price" },
       ],
+      "aoColumnDefs": [{
+        "fnRender": function(oObj) {
+          function pad(n) { return n<10 ? '0'+n : n; }
+	  var date = oObj.aData[0];
+          return date.getUTCFullYear() + '-' + pad(date.getUTCMonth()+1)+'-' + pad(date.getUTCDate());
+	},
+	"aTargets": [0],
+      }],
       "bJQueryUI": true,
       "sPaginationType": "full_numbers",
       "bDestroy": true,
@@ -241,7 +247,7 @@ var tabler = {
 var grapher = {
   showGraph : function() {
     $("#graphHolder").html("");
-    var data = [ { color: "#1fcd1f", data: appdata.basicStockPrices, label: "price" } ];
+    var data = [ { color: "#1fcd1f", data: utility.flatten(appdata.stockPrices), label: "price" } ];
     var options = {
       xaxis: {
         mode: "time",
@@ -279,12 +285,12 @@ $(document).ready(function() {
     changeYear: true,
     onSelect: function() {
       appdata.startDate = $("#startDatePicker").datepicker("getDate");
-      yahoo.historicalPrices();
+      yahoo.updatePrices();
     }
   });
 
   $("#frequencySelect").change(function() {
-    yahoo.historicalPrices();
+    yahoo.updatePrices();
   });
   
   $("#rateMethodSelect").change(function() {
@@ -306,5 +312,5 @@ $(document).ready(function() {
       .data( "item.autocomplete", item )
       .append( "<a>" + t + "</a>" )
       .appendTo( ul );
-      };
+  };
 });
