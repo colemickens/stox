@@ -309,43 +309,37 @@ function variance(values) {
   return variance;
 }
 
-function expectedCostOfEquity() {
+function expectedCostOfEquity(riskFreeRate) {
   // whatever fun hell this is going to be
 }
 	
 	function skew(){
-		var current = appdata.stockPrices.length-1;
-		var sum = 0;
-		for(var i = current; i>=0; i--){
-			sum += appdata.stockPrices[i].price;
-		}
-		var mean = sum/appdata.stockPrices.length;
+	        var rateOfReturns = getRateOfReturns(appdata.stockPrices);
+		var current = rateOfReturns.length-1;
+		var meanRor = average(rateOfReturns);
 		var deviants = 0;
 		var cubeddeviants = 0;
 		for(var i = current; i>=0; i--){
-			deviants += Math.pow((appdata.stockPrices[i].price-mean), 2);
-			cubeddeviants += Math.pow((appdata.stockPrices[i].price-mean), 3);
+			deviants += Math.pow((rateOfReturns[i]-meanRor), 2);
+			cubeddeviants += Math.pow((rateOfReturns[i]-meanRor), 3);
 		}
-		var standardDev = Math.sqrt(deviants/appdata.stockPrices.length);
-		var skew = (cubeddeviants/appdata.stockPrices.length)/((appdata.stockPrices.length-1)*Math.pow(standardDev, 3));
+		var standardDev = Math.sqrt(deviants/rateOfReturns.length);
+		var skew = (cubeddeviants/rateOfReturns.length)/((rateOfReturns.length-1)*Math.pow(standardDev, 3));
 		return skew;
 	}
 	
 	function excessKurtosis(){
-		var current = appdata.stockPrices.length-1;
-		var sum = 0;
-		for(var i = current; i>=0; i--){
-			sum += appdata.stockPrices[i].price;
-		}
-		var mean = sum/appdata.stockPrices.length;
+	        var rateOfReturns = getRateOfReturns(appdata.stockPrices);
+		var current = rateOfReturns.length-1;	
+		var meanRor = average(rateOfReturns);
 		var fourthdeviants = 0;
 		var deviants = 0;
 		for(var i =0; i<current; i++){
-			fourthdeviants += Math.pow((appdata.stockPrices[i].price-mean), 4);
-			deviants += Math.pow((appdata.stockPrices[i].price-mean), 2);
+			fourthdeviants += Math.pow((rateOfReturns[i]-meanRor), 4);
+			deviants += Math.pow((rateOfReturns[i]-meanRor), 2);
 		}
 		
-		var meanDevSquared = Math.pow((deviants/appdata.stockPrices.length), 2);
+		var meanDevSquared = Math.pow((deviants/rateOfReturns.length), 2);
 		var kurtosis = (fourthdeviants/meanDevSquared)-3;
 		return kurtosis;
 		
