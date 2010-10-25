@@ -300,6 +300,10 @@ function variance(values) {
   variance /= values.length;
   return variance;
 }
+
+function expectedCostOfEquity() {
+  // whatever fun hell this is going to be
+}
 	
 	function skew(){
 		var current = appdata.stockPrices.length-1;

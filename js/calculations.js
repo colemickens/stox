@@ -145,7 +145,7 @@ var calculations = {
     options: {  },
     calculation: function(data) {
       try {
-        return autocorrelationValue(appdata.historicalPrices);
+        return autocorrelationValue(appdata.stockPrices);
       } catch(e) {
         return "[error]";
       }
@@ -173,20 +173,23 @@ var calculations = {
       }
     }
   },
-/*
-  correlationBetweenReturnRatesOfSpx: {
-    title: "Correlation b/w rr of SPX",
-    options: {  },
-    calculation: function(data) {
-    }
-  },
-*/
-  beta : {
-    title: "Beta",
+  keckBeta : {
+    title: "Keck Beta",
     options: {  },
     calculation: function(data) {
       try {
-        return "[beta]";
+        return keckBeta();
+      } catch(e) {
+        return "[error]";
+      }
+    }
+  },
+  internetBeta : {
+    title: "Internet Beta",
+    options: {  },
+    calculation: function(data) {
+      try {
+        return internetBeta();
       } catch(e) {
         return "[error]";
       }
@@ -197,8 +200,9 @@ var calculations = {
     options: {  },
     calculation: function(data) {
       try {
+        return expectedCostOfEquity();
       } catch(e) {
-
+        return "[error]";
       }
     }
   },
@@ -207,7 +211,7 @@ var calculations = {
     options: {  },
     calculation: function(data) {
       try {
-        return "[excessKurtosis]";
+        return excessKurtosis();
       } catch(e) {
         return "[error]";
       }
@@ -218,7 +222,7 @@ var calculations = {
     options: {  },
     calculation: function(data) {
       try {
-        return "[skew]";
+        return skew();
       } catch(e) {
         return "[error]";
       }
@@ -229,7 +233,7 @@ var calculations = {
     options: {  },
     calculation: function(data) {
       try {
-        return "[jarqueBera]";
+        return jarqueBera();
       } catch(e) {
         return "[error]";
       }
