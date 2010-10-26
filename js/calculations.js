@@ -145,7 +145,8 @@ var calculations = {
     options: {  },
     calculation: function(data) {
       try {
-        return autocorrelationValue(appdata.stockPrices);
+		var answer = autocorrelationValue(appdata.stockPrices);
+        return Math.round(answer*10000)/10000;
       } catch(e) {
         return "[error]";
       }
@@ -156,7 +157,8 @@ var calculations = {
     options: {  },
     calculation: function(data) {
       try {
-        return autocorrelationValue(appdata.spxPrices);
+		var answer = autocorrelationValue(appdata.spxPrices);
+		return Math.round(answer*10000)/10000;
       } catch(e) {
         return "[error]";
       }
@@ -167,7 +169,8 @@ var calculations = {
     options: {  },
     calculation: function(data) {
       try {
-        return correlationValue();
+		var answer = correlationValue();
+        return Math.round(answer*10000)/10000;
       } catch(e) {
         return "[error]";
       }
@@ -195,23 +198,25 @@ var calculations = {
       }
     }
   },
-  excessKurtosis : {
-    title: "Excess Kurtosis",
-    options: {  },
-    calculation: function(data) {
-      try {
-        return excessKurtosis();
-      } catch(e) {
-        return "[error]";
-      }
-    }
-  },
   skew : {
     title: "Skew",
     options: {  },
     calculation: function(data) {
       try {
-        return skew();
+		var answer = skew();
+        return Math.round(answer*100)/100;
+      } catch(e) {
+        return "[error]";
+      }
+    }
+  },
+  excessKurtosis : {
+    title: "Excess Kurtosis",
+    options: {  },
+    calculation: function(data) {
+      try {
+		var answer = excessKurtosis();
+		return Math.round(answer*100)/100;
       } catch(e) {
         return "[error]";
       }
