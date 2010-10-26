@@ -33,35 +33,6 @@ var appdata = {
   },
   log: true,
 }
-/*
-var init = {
-  init : function(indexSymbol) {
-    blocker.block("Loading initial data from Yahoo!");
-    init.loadConstituents(indexSymbol);
-  },
-
-
-  loadConstituents : function(indexSymbol) {
-    var url = "http://uk.old.finance.yahoo.com/d/quotes.csv?s=" + indexSymbol + "&f=s&e=.csv";
-    $.jsonpProxy(url, function(symbols) {
-      symbols = symbols.split('\n');
-      symbols = $.grep(symbols, function(value) { return value != ""; })
-      for(var i=0; i<symbols.length; i++) {
-        if(symbols[i].trim() != "") {
-          appdata.constituents.push(symbols[i].trim());
-        }
-      }
-      init.finish();
-    });
-  },
-
-  finish : function() {
-    blocker.message("Done!");
-    blocker.unblock();
-  }
-}
-*/
-
 
 var utility = {
   flatten: function(data) {
