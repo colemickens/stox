@@ -331,6 +331,7 @@ function expectedCostOfEquity() {
 		return skew;
 	}
 	
+        // change to rates of returns
 	function excessKurtosis(){
 		var current = appdata.stockPrices.length-1;
 		var sum = 0;

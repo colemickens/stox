@@ -205,10 +205,21 @@ var tabler = {
 }
 
 var grapher = {
+  _getRorData: function() {
+    var data = new Array();
+    var rawRorData = getRateOfReturns(appdata.stockPrices);
+    //data.push( new Array(appdata.stockPrices[0].date, rawRorData[0]) );
+    for(var i=0; i<appdata.stockPrices.length-2; i++) {
+      data.push( new Array(appdata.stockPrices[i+1].date, rawRorData[i]) );
+    }
+    return data;
+  },
   showGraph : function() {
-    $("#graphHolder").html("");
-    var data = [ { color: "#1fcd1f", data: utility.flatten(appdata.stockPrices), label: "price" } ];
-    var options = {
+    $("#stockPriceHistogramHolder").html("");
+    $("#rateOfReturnHistogramHolder").html("");
+
+    var pricesData = [ { lineWidth: "1px", color: "#1fcd1f", data: utility.flatten(appdata.stockPrices), label: "price" } ];
+    var pricesOptions = {
       xaxis: {
         mode: "time",
         timeformat: "%y/%m/%d",
@@ -222,7 +233,12 @@ var grapher = {
       }
     };
 
-    $.plot( $("#graphHolder"), data, options );
+
+    var rorData = [ { lineWidth: 1, color: "#1fcd1f", data: grapher._getRorData(), label: "Rate Of Return" } ];
+    var rorOptions = pricesOptions;
+
+    $.plot( $("#stockPriceHistogramHolder"), pricesData, pricesOptions );
+    $.plot( $("#rateOfReturnHistogramHolder"), rorData, rorOptions );
   }
 }
 
