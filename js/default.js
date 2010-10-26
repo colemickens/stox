@@ -269,11 +269,9 @@ var grapher = {
     };
 
 
-    var rorData = [ { lineWidth: 1, color: "#1fcd1f", data: grapher._getRorData(), label: "Rate Of Return", bars: { show: true, barWidth: grapher._barWidth } } ];
+    var rorData = [ { lineWidth: 1, color: "#1fcd1f", data: grapher._getRorData(), bars: { show: true, barWidth: grapher._barWidth } } ];
     var rorOptions = {
       xaxis: {
-      },
-      legend: {
       },
     };
 
@@ -286,6 +284,9 @@ $(document).ready(function() {
   $(window).resize(function() {
     grapher.showGraph();
   });
+
+  var width = $("#stockPriceHistogramHolder").width();
+  $("#stockPriceHistogramHolder, #rateOfReturnHistogramHolder").width(width-5);
 
   $("#symbolLookupBox").keyup(function() {
     lookuper.lookup( $("#symbolLookupBox").val() );

@@ -312,7 +312,7 @@ function variance(values) {
 function expectedCostOfEquity(riskFreeRate) {
   // whatever fun hell this is going to be
   var expectedCostOfEquity = 0;
-  var beta = keckBeta();
+  var beta = beta();
   var rateOfReturnOfStock = meanRateOfReturn(appdata.stockPrices);
   expectedCostOfEquity = riskFreeRate + beta*(rateOfReturnOfStock-riskFreeRate);
   return expectedCostOfEquity;
