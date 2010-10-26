@@ -149,13 +149,9 @@ function standardDeviation(periods, dataSet) { // <-- use
 		return RSI;
 	}
 
-	function simpleMovingAverage(periods, historic){
+	function simpleMovingAverage(periods, startPoint){
 		var sum = 0;
-		var current = appdata.stockPrices.length-1;
-		if(historic != current){
-			current = historic;
-		}
-		for(var i = current; i>current-periods, i>=0; i--){
+		for(var i = startPoint; (i>startPoint-periods && i>=0); i--){
 			sum += appdata.stockPrices[i].price;
 			
 		}
