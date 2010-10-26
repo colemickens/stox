@@ -246,7 +246,7 @@ function rAdapter(input) {
 function correlationValue() {
   var stockRateOfReturns = getRateOfReturns(appdata.stockPrices);
   var spxRateOfReturns = getRateOfReturns(appdata.spxPrices);
-  var N = stockRateOfReturns.length - 1;
+  var N = stockRateOfReturns.length;
   var xbar = average(stockRateOfReturns);
   var ybar = average(spxRateOfReturns);
   // var periods = 1; // ??????
@@ -263,22 +263,22 @@ function correlationValue() {
 
 // CALCULATION
 // the std dev's may need to be of RoRs instead of prices
-function keckBeta() {
+function beta() {
   var correlation = correlationValue();
-  var stdDevStock = standardDeviation(appdata.stockPrices.length-1, appdata.stockPrices);
-  var stdDevSpx = standardDeviation(appdata.spxPrices.length-1, appdata.spxPrices);
+  var stockRateOfReturns = getRateOfReturns(appdata.stockPrices);
+  var spxRateOfReturns = getRateOfReturns(appdata.spxPrices);
+  
+  var periods = stockRateOfReturns.length;
+  var Sx = standardDeviation(periods-1, adapter(stockRateOfReturns));
+  var Sy = standardDeviation(periods-1, adapter(spxRateOfReturns));
+  
+  //var stdDevStock = standardDeviation(stockRateOfReturns.length-1, stockRateOfReturns);
+  //var stdDevSpx = standardDeviation(spxRateOfReturns.length-1, spxRateOfReturns);
 
-  var beta = correlation * (stdDevStock/stdDevSpx);
+  var beta = correlation * (Sx/Sy);
   return beta;
 }
 
-// CALCULATION
-function internetBeta() {
-  var numerator = covariance(rAdapter(appdata.stockPrices), rAdapter(appdata.spxPrices));
-  var denominator = variance(rAdapter(appdata.spxPrices));
-  var beta = numerator/denominator;
-  return beta;
-}
 
 // UTILITY
 function covariance(x, y) {
@@ -319,34 +319,40 @@ function expectedCostOfEquity(riskFreeRate) {
 }
 	
 	function skew(){
-	        var rateOfReturns = getRateOfReturns(appdata.stockPrices);
-		var current = rateOfReturns.length-1;
-		var meanRor = average(rateOfReturns);
+	    var rateOfReturns = getRateOfReturns(appdata.stockPrices);
+		var meanRoR = average(rateOfReturns);
 		var deviants = 0;
 		var cubeddeviants = 0;
-		for(var i = current; i>=0; i--){
-			deviants += Math.pow((rateOfReturns[i]-meanRor), 2);
-			cubeddeviants += Math.pow((rateOfReturns[i]-meanRor), 3);
+		
+		for(var i=0; i<rateOfReturns.length; i++){
+			deviants += Math.pow((rateOfReturns[i]-meanRoR), 2);
+			cubeddeviants += Math.pow((rateOfReturns[i]-meanRoR), 3);
 		}
-		var standardDev = Math.sqrt(deviants/rateOfReturns.length);
-		var skew = (cubeddeviants/rateOfReturns.length)/((rateOfReturns.length-1)*Math.pow(standardDev, 3));
+		
+		deviants /= rateOfReturns.length;
+		cubeddeviants /= rateOfReturns.length;
+		
+		var skew = cubeddeviants/Math.pow(deviants, 3/2);
 		return skew;
 	}
 	
-        // change to rates of returns
+    
 	function excessKurtosis(){
-	        var rateOfReturns = getRateOfReturns(appdata.stockPrices);
-		var current = rateOfReturns.length-1;	
-		var meanRor = average(rateOfReturns);
-		var fourthdeviants = 0;
+	
+		var rateOfReturns = getRateOfReturns(appdata.stockPrices);
+		var meanRoR = average(rateOfReturns);
 		var deviants = 0;
-		for(var i =0; i<current; i++){
-			fourthdeviants += Math.pow((rateOfReturns[i]-meanRor), 4);
-			deviants += Math.pow((rateOfReturns[i]-meanRor), 2);
+		var fourthdeviants = 0;
+		
+		for(var i=0; i<rateOfReturns.length; i++){
+			deviants += Math.pow((rateOfReturns[i]-meanRoR), 2);
+			fourthdeviants += Math.pow((rateOfReturns[i]-meanRoR), 4);
 		}
 		
-		var meanDevSquared = Math.pow((deviants/rateOfReturns.length), 2);
-		var kurtosis = (fourthdeviants/meanDevSquared)-3;
+		deviants /= rateOfReturns.length;
+		fourthdeviants /= rateOfReturns.length;
+		
+		var kurtosis = (fourthdeviants/Math.pow(deviants, 2))-3;
 		return kurtosis;
 		
 	}

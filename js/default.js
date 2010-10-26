@@ -137,7 +137,8 @@ var yahoo = {
   updatePrices: function() {
     var symbol = appdata.symbol;
     yahoo._block(symbol);
-
+	console.log(yahoo._getUrl(symbol));
+	console.log(yahoo._getUrl("^GSPC"));
     $.jsonpProxy(yahoo._getUrl(symbol), function(data) {
       appdata.stockPrices = yahoo._processData(data);
       

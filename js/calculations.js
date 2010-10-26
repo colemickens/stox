@@ -222,7 +222,14 @@ var calculations = {
     options: {  },
     calculation: function(data) {
       try {
-        return jarqueBera();
+		var answer = jarqueBera();
+        answer = Math.round(answer*100)/100;
+        if(answer <= 9.2103) {
+          answer += " (more than a 1% chance of incorrectly rejecting normality)";
+        }else{
+		  answer += " (less than a 1% chance of incorrectly rejecting normality)";
+		}
+        return answer;
       } catch(e) {
         return "[error]";
       }
