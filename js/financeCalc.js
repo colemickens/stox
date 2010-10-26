@@ -220,10 +220,10 @@ function autocorrelationValue(dataSet) {
   }
   autocovariance /= N;
   
-  var variance = variance(rateOfReturns);
+  var variancevalue = variance(rateOfReturns);
 
   
-  var autocorrelation = autocovariance/variance;
+  var autocorrelation = autocovariance/variancevalue;
   return autocorrelation;
 }
 
@@ -238,7 +238,7 @@ function adapter(input) {
 
 // CALCULATION
 function correlationValue() {
-  var stockRateOfReturns = getRateOfReturns(appdata.historicalPrices);
+  var stockRateOfReturns = getRateOfReturns(appdata.stockPrices);
   var spxRateOfReturns = getRateOfReturns(appdata.spxPrices);
   var N = stockRateOfReturns.length - 1;
   var xbar = average(stockRateOfReturns);
