@@ -12,6 +12,11 @@
 
 
   Add blocking ot JSONP plugin
+
+
+ Fix Beta
+ Fix Cost Of Equity - 1.58
+ Fix Outlier 11 gets cut off from 10.6 (jul 23, 2010)
 */
 
 var appdata = {

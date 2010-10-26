@@ -310,15 +310,15 @@ function variance(values) {
 
 function expectedCostOfEquity(riskFreeRate) {
   // whatever fun hell this is going to be
-  var expectedCostOfEquity = 0;
   var betaVal = beta();
   var rateOfReturnOfStock = meanRateOfReturn(appdata.stockPrices);
-  expectedCostOfEquity = riskFreeRate + betaVal*(rateOfReturnOfStock-riskFreeRate);
+  var expectedCostOfEquity = riskFreeRate + betaVal*(rateOfReturnOfStock-riskFreeRate);
+  expectedCostOfEquity *= appdata.getFrequency();
   return expectedCostOfEquity;
 }
 	
 	function skew(){
-	    var rateOfReturns = getRateOfReturns(appdata.stockPrices);
+	    var rateOfReturns = getRateOfReturns(appdata.spxPrices);
 		var meanRoR = average(rateOfReturns);
 		var deviants = 0;
 		var cubeddeviants = 0;
