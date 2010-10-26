@@ -173,23 +173,12 @@ var calculations = {
       }
     }
   },
-  keckBeta : {
-    title: "Keck Beta",
+  beta : {
+    title: "Beta",
     options: {  },
     calculation: function(data) {
       try {
-        return keckBeta();
-      } catch(e) {
-        return "[error]";
-      }
-    }
-  },
-  internetBeta : {
-    title: "Internet Beta",
-    options: {  },
-    calculation: function(data) {
-      try {
-        return internetBeta();
+        return beta();
       } catch(e) {
         return "[error]";
       }

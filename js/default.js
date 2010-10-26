@@ -205,12 +205,46 @@ var tabler = {
 }
 
 var grapher = {
+  _barWidth: 0,
   _getRorData: function() {
     var data = new Array();
-    var rawRorData = getRateOfReturns(appdata.stockPrices);
-    //data.push( new Array(appdata.stockPrices[0].date, rawRorData[0]) );
-    for(var i=0; i<appdata.stockPrices.length-2; i++) {
-      data.push( new Array(appdata.stockPrices[i+1].date, rawRorData[i]) );
+    var rateOfReturns = getRateOfReturns(appdata.stockPrices);
+    var interval = 0;
+    
+    var rangeMax = Math.max.apply(Math, rateOfReturns);
+    var rangeMin = Math.min.apply(Math, rateOfReturns);
+    console.log("max: " + rangeMax);
+    console.log("min: " + rangeMin);
+    
+    rangeMax = Math.round(rangeMax*10)*10;
+    rangeMin = (Math.round(rangeMin*10)-1)*10;
+    
+    console.log("max: " + rangeMax);
+    console.log("min: " + rangeMin);
+
+    var staticNumOfBars;
+    var numOfBars = $("#numOfBars").val();
+    if(numOfBars == "auto") {
+      interval = 1;
+    } else {
+      numOfBars = parseFloat(numOfBars);
+      interval = (rangeMax-rangeMin)/numOfBars;
+    }
+    console.log("interval: " + interval);
+    grapher._barWidth=interval;
+
+    // insert any low outliers
+    for(var i=rangeMin; i<rangeMax; i+=interval) {
+      var min = i;
+      var max = i+interval;
+      var count = 0;
+      for(var j=0; j<rateOfReturns.length; j++) {
+        var ror = rateOfReturns[j]*100;
+        if(ror>=min && ror<max) {
+          count++;
+        }
+      }
+      data.push(new Array(i, count));
     }
     return data;
   },
@@ -234,8 +268,13 @@ var grapher = {
     };
 
 
-    var rorData = [ { lineWidth: 1, color: "#1fcd1f", data: grapher._getRorData(), label: "Rate Of Return" } ];
-    var rorOptions = pricesOptions;
+    var rorData = [ { lineWidth: 1, color: "#1fcd1f", data: grapher._getRorData(), label: "Rate Of Return", bars: { show: true, barWidth: grapher._barWidth } } ];
+    var rorOptions = {
+      xaxis: {
+      },
+      legend: {
+      },
+    };
 
     $.plot( $("#stockPriceHistogramHolder"), pricesData, pricesOptions );
     $.plot( $("#rateOfReturnHistogramHolder"), rorData, rorOptions );
@@ -266,6 +305,10 @@ $(document).ready(function() {
 
   $("#frequencySelect").change(function() {
     yahoo.updatePrices();
+  });
+
+  $("#numOfBars").change(function() {
+    grapher.showGraph();
   });
   
   $("#rateMethodSelect").change(function() {
