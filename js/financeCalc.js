@@ -155,7 +155,7 @@ function standardDeviation(periods, dataSet) { // <-- use
 		if(historic != current){
 			current = historic;
 		}
-		for(var i = current; i>current-periods; i--){
+		for(var i = current; i>current-periods, i>=0; i--){
 			sum += appdata.stockPrices[i].price;
 			
 		}
@@ -163,16 +163,15 @@ function standardDeviation(periods, dataSet) { // <-- use
 		return SMA;
 	}
 	
-	function exponentialMovingAverage(periods){
-		var current = appdata.stockPrices.length-1;
-		var EMAprevious = simpleMovingAverage(periods, current-periods);
-		var multiplier = 2/(periods+1);
-		for(var i = current-periods; i<=current; i++){
-			EMAprevious = ((appdata.stockPrices[i].price-EMAprevious)*multiplier)+EMAprevious;
-		}
-		var EMA = EMAprevious;
-		return EMA;
-	}
+function exponentialMovingAverage(periods){
+  var current = appdata.stockPrices.length-1;
+  var ema = simpleMovingAverage(periods, current-periods);
+  var multiplier = 2/(periods+1);
+  for(var i = current-periods; i<=current; i++){
+    ema += ((appdata.stockPrices[i].price-ema)*multiplier);
+  }
+  return ema;
+}
 
 	function movingAverageConvergenceDivergence(periods1, periods2, periods3){
 		//default to 12 day and 26 day
