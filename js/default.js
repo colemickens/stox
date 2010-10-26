@@ -142,8 +142,6 @@ var yahoo = {
   updatePrices: function() {
     var symbol = appdata.symbol;
     yahoo._block(symbol);
-	console.log(yahoo._getUrl(symbol));
-	console.log(yahoo._getUrl("^GSPC"));
     $.jsonpProxy(yahoo._getUrl(symbol), function(data) {
       appdata.stockPrices = yahoo._processData(data);
       
@@ -219,15 +217,10 @@ var grapher = {
     
     var rangeMax = Math.max.apply(Math, rateOfReturns);
     var rangeMin = Math.min.apply(Math, rateOfReturns);
-    console.log("max: " + rangeMax);
-    console.log("min: " + rangeMin);
     
     rangeMax = Math.round(rangeMax*10)*10;
     rangeMin = (Math.round(rangeMin*10)-1)*10;
     
-    console.log("max: " + rangeMax);
-    console.log("min: " + rangeMin);
-
     var staticNumOfBars;
     var numOfBars = $("#numOfBars").val();
     if(numOfBars == "auto") {
@@ -236,7 +229,6 @@ var grapher = {
       numOfBars = parseFloat(numOfBars);
       interval = (rangeMax-rangeMin)/numOfBars;
     }
-    console.log("interval: " + interval);
     grapher._barWidth=interval;
 
     // insert any low outliers

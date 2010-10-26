@@ -9,9 +9,6 @@ function average(input) {
 
 // CALCULATION: ? TEST
 function meanRateOfReturn(dataSet){
-  if(dataSet == undefined) {
-    console.log("error!!!");
-  }
   return average(getRateOfReturns(dataSet));
 }
 
@@ -40,6 +37,27 @@ function logRoR(Vf, Vi){
   return RoR;
 }
 
+// UTILITY
+function priceAdapter(pricedDataSet) {
+  var fixedDataSet = new Array();
+  for(var i in pricedDataSet) {
+    fixedDataSet.push(pricedDataSet[i].price);
+  }
+  return fixedDataSet;
+}
+
+// CALCULATION & UTILITY
+function genericStandardDeviation(dataSet) {
+  var mean = average(dataSet);
+  var deviants = 0;
+  for(var i=0; i<dataSet.length; i++) {
+    deviants += Math.pow((dataSet[i]-mean), 2);
+  }
+  var standardDev = Math.sqrt(deviants/dataSet.length);
+  return standardDev;
+}
+
+/*
 // CALCULATION/UTILITY : ? CHECK
 function standardDeviation(periods, dataSet) { // <-- use
   if(dataSet == undefined) {
@@ -86,7 +104,7 @@ function standardDeviation(periods, dataSet) { // <-- use
 //		}
 		return standardDev;
 	}
-	
+	*/
 	
 	function annualizedMean(){
 		var frequency = appdata.getFrequency();
@@ -97,7 +115,8 @@ function standardDeviation(periods, dataSet) { // <-- use
 	
 	function annualizedStandardDeviation(){
 		var frequency = appdata.getFrequency();
-		var annualSTDV = standardDeviationRoR()*Math.sqrt(frequency);
+		// var annualSTDV = standardDeviationRoR()*Math.sqrt(frequency);
+                var annualSTDV = genericStandardDeviation(getRateOfReturns(appdata.stockPrices)) * Math.sqrt(frequency);
 		return annualSTDV;
 	}
 	
@@ -149,7 +168,7 @@ function standardDeviation(periods, dataSet) { // <-- use
 		return RSI;
 	}
 
-	function simpleMovingAverage(periods, startPoint){
+	function simpleMovingAverage(periods, startPoint) {
 		var sum = 0;
 		for(var i = startPoint; (i>startPoint-periods && i>=0); i--){
 			sum += appdata.stockPrices[i].price;
@@ -189,8 +208,15 @@ function exponentialMovingAverage(periods){
 		//default to 20
 		var current = appdata.stockPrices.length-1;
 		var middleBand = simpleMovingAverage(periods, current);
-		var upperBand = middleBand + (standardDeviation(periods)*2);
-		var lowerBand = middleBand - (standardDeviation(periods)*2);
+//		var upperBand = middleBand + (standardDeviation(periods)*2);
+//		var lowerBand = middleBand - (standardDeviation(periods)*2);
+                // TODO:
+                // slice data so we only get what we want...
+                var startOfSlice = appdata.stockPrices.length-periods;
+                var truncatedStockPrices = appdata.stockPrices.slice(startOfSlice);
+                var deviation = genericStandardDeviation(priceAdapter(truncatedStockPrices));
+                var upperBand = middleBand + (deviation * 2);
+                var lowerBand = middleBand - (deviation * 2);
 		
 		var bands = [];
 		bands[0] = lowerBand;
@@ -219,24 +245,6 @@ function autocorrelationValue(dataSet) {
   return autocorrelation;
 }
 
-// UTILITY - DISGUSTING HACK
-function adapter(input) {
-  var retVal = new Array();
-  for(var i=0; i<input.length; i++) {
-    var entry = { price: input[i] };
-    retVal.push(entry);
-  }
-  return retVal;
-}
-
-function rAdapter(input) {
-  var retVal = new Array();
-  for(var i=0; i<input.length; i++) {
-    retVal.push(input[i].price);
-  }
-  return retVal;
-}
-
 // CALCULATION
 function correlationValue() {
   var stockRateOfReturns = getRateOfReturns(appdata.stockPrices);
@@ -246,8 +254,10 @@ function correlationValue() {
   var ybar = average(spxRateOfReturns);
   // var periods = 1; // ??????
   var periods = stockRateOfReturns.length;
-  var Sx = standardDeviation(periods, adapter(stockRateOfReturns));
-  var Sy = standardDeviation(periods, adapter(spxRateOfReturns));
+//  var Sx = standardDeviation(periods, adapter(stockRateOfReturns));
+//  var Sy = standardDeviation(periods, adapter(spxRateOfReturns));
+  var Sx = genericStandardDeviation(stockRateOfReturns);
+  var Sy = genericStandardDeviation(spxRateOfReturns);
   var correlation = 0;
   for(var i=0; i<N; i++) {
     correlation += (stockRateOfReturns[i]-xbar)*(spxRateOfReturns[i]-ybar);
@@ -264,8 +274,10 @@ function beta() {
   var spxRateOfReturns = getRateOfReturns(appdata.spxPrices);
   
   var periods = stockRateOfReturns.length;
-  var Sx = standardDeviation(periods-1, adapter(stockRateOfReturns));
-  var Sy = standardDeviation(periods-1, adapter(spxRateOfReturns));
+//  var Sx = standardDeviation(periods-1, adapter(stockRateOfReturns));
+//  var Sy = standardDeviation(periods-1, adapter(spxRateOfReturns));
+  var Sx = genericStandardDeviation(stockRateOfReturns);
+  var Sy = genericStandardDeviation(spxRateOfReturns);
   
   //var stdDevStock = standardDeviation(stockRateOfReturns.length-1, stockRateOfReturns);
   //var stdDevSpx = standardDeviation(spxRateOfReturns.length-1, spxRateOfReturns);

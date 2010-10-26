@@ -115,12 +115,13 @@ var calculations = {
       }
     }
   },
-  standardDeviation : {
-    title: "Standard Deviation",
+  standardDeviationOfRatesOfReturn : {
+    title: "Standard Deviation (RoR)",
     options: { /* periods: 10 */ },
     calculation: function(data) {
       try {
-        var answer = standardDeviationRoR(/*data.periods*/);
+        //var answer = standardDeviationRoR(/*data.periods*/);
+        var answer = genericStandardDeviation(getRateOfReturns(appdata.stockPrices));
         return Math.round(answer*10000)/10000;
       } catch(e) {
         return "[error]";
