@@ -102,18 +102,12 @@ var lookuper = {
 }
 
 var yahoo = {
-  _blockStatus: false,
   _unblock: function() {
-    if(yahoo._blockStatus == false) {
-      yahoo._blockStatus = true;
-    } else {
-      grapher.showGraph();
-      calculator.calculate();
-      blocker.unblock();
-    }
+    grapher.showGraph();
+    calculator.calculate();
+    blocker.unblock();
   },
   _block: function(symbol) {
-    yahoo._blockStatus = false;
     blocker.block("Loading data for " + symbol + " and the S&P 500 from Yahoo!");
   },
   _processData: function(data) {
@@ -128,43 +122,35 @@ var yahoo = {
       };
       processedData.push(entry);
     }
-
     return processedData;
   },
-  updatePrices: function() {
-    var symbol = appdata.symbol;
-    var frequency = appdata.frequency;
+  _getUrl: function(symbol) {
     var g = $("#frequencySelect").val()[0];
-    
-    yahoo._block(symbol);
-
-    var url = "http://ichart.finance.yahoo.com/table.csv?g="+g;
+    var url = "http://ichart.finance.yahoo.com/table.csv?s="+symbol+"&g="+g;
     if(appdata.startDate) {
       url += "&a=" + appdata.startDate.getMonth();
       url += "&b=" + appdata.startDate.getDate();
       url += "&c=" + appdata.startDate.getFullYear();
     }
+    return url;
+  },
+  updatePrices: function() {
+    var symbol = appdata.symbol;
+    yahoo._block(symbol);
 
-    var urlStock = url + "&s=" + symbol;
-    var urlSpx = url + "&s=^GSPC";
-
-    $.jsonpProxy(urlStock, function(data) {
+    $.jsonpProxy(yahoo._getUrl(symbol), function(data) {
       appdata.stockPrices = yahoo._processData(data);
       
       // set the default start date
-      if(appdata.startDate == undefined) {
-        console.log(appdata.stockPrices[0].date + ": " + appdata.stockPrices[0].price);
-        appdata.startDate = appdata.stockPrices[0].date;
-        $("#startDatePicker").datepicker("setDate", new Date(appdata.startDate));
-      }
+      appdata.startDate = appdata.stockPrices[0].date;
+      $("#startDatePicker").datepicker("setDate", appdata.startDate);
 
-      yahoo._unblock();
+      $.jsonpProxy(yahoo._getUrl("^GSPC"), function(data) {
+        appdata.spxPrices = yahoo._processData(data);
+        yahoo._unblock();
+      });
     });
     
-    $.jsonpProxy(urlSpx, function(data) {
-      appdata.spxPrices = yahoo._processData(data);
-      yahoo._unblock();
-    });
   }
 }
 
@@ -219,10 +205,21 @@ var tabler = {
 }
 
 var grapher = {
+  _getRorData: function() {
+    var data = new Array();
+    var rawRorData = getRateOfReturns(appdata.stockPrices);
+    //data.push( new Array(appdata.stockPrices[0].date, rawRorData[0]) );
+    for(var i=0; i<appdata.stockPrices.length-2; i++) {
+      data.push( new Array(appdata.stockPrices[i+1].date, rawRorData[i]) );
+    }
+    return data;
+  },
   showGraph : function() {
-    $("#graphHolder").html("");
-    var data = [ { color: "#1fcd1f", data: utility.flatten(appdata.stockPrices), label: "price" } ];
-    var options = {
+    $("#stockPriceHistogramHolder").html("");
+    $("#rateOfReturnHistogramHolder").html("");
+
+    var pricesData = [ { lineWidth: "1px", color: "#1fcd1f", data: utility.flatten(appdata.stockPrices), label: "price" } ];
+    var pricesOptions = {
       xaxis: {
         mode: "time",
         timeformat: "%y/%m/%d",
@@ -236,7 +233,12 @@ var grapher = {
       }
     };
 
-    $.plot( $("#graphHolder"), data, options );
+
+    var rorData = [ { lineWidth: 1, color: "#1fcd1f", data: grapher._getRorData(), label: "Rate Of Return" } ];
+    var rorOptions = pricesOptions;
+
+    $.plot( $("#stockPriceHistogramHolder"), pricesData, pricesOptions );
+    $.plot( $("#rateOfReturnHistogramHolder"), rorData, rorOptions );
   }
 }
 
@@ -250,7 +252,6 @@ $(document).ready(function() {
   }).css("width", "500px");
 
   $("#showTableButton").click(function() {
-    console.log("showing table");
     tabler.showTable();
   });
 

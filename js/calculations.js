@@ -197,10 +197,10 @@ var calculations = {
   },
   expectedCostOfEquity: {
     title: "Expected Cost of Equity",
-    options: {  },
+    options: { risk_free_rate_of_return_as_decimal: .25 },
     calculation: function(data) {
       try {
-        return expectedCostOfEquity();
+        return expectedCostOfEquity(data.risk_free_rate_of_return_as_decimal);
       } catch(e) {
         return "[error]";
       }
