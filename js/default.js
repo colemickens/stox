@@ -25,6 +25,7 @@ var appdata = {
   spxPrices: [],
   symbol: "",
   startDate: undefined,
+  plotRateOfReturnHistogram: true,
   getFrequency : function() {
     if( $("#frequencySelect").val() == "daily") { return 251; }
     if( $("#frequencySelect").val() == "weekly") { return 52; }
@@ -217,6 +218,12 @@ var grapher = {
     }
     return data;
   },
+  _getEmaData: function() {
+    .
+  },
+  _getMacdData: function() {
+    .
+  },
   showGraph : function() {
     $("#stockPriceHistogramHolder").html("");
     $("#rateOfReturnHistogramHolder").html("");
@@ -243,8 +250,32 @@ var grapher = {
       },
     };
 
+    var macdData = [ 
+      // ema(9)
+      {
+        lineWidth: 1,
+        color: "red",
+        data: grapher._getEmaData();
+      },
+      // macd(26,12)
+      {
+        lineWidth: 1,
+        color: "blue",
+        data: grapher._getMacdData(),
+      },
+    ];
+    var macdOptions = {
+      xaxis: {
+      }
+    };
+
     $.plot( $("#stockPriceHistogramHolder"), pricesData, pricesOptions );
-    $.plot( $("#rateOfReturnHistogramHolder"), rorData, rorOptions );
+
+    if(appdata.plotRateOfReturnHistogram) {
+      $.plot( $("#rateOfReturnHistogramHolder"), rorData, rorOptions );
+    } else {
+      $.plot( $("#rateOfReturnHistogramHolder"), macdData, macdOptions );
+    }
   }
 }
 
@@ -289,6 +320,14 @@ $(document).ready(function() {
     }
     calculator.calculate();
   });
+
+  $("#secondaryGraphTypeSelect").change(function() {
+    if($("#secondaryGraphTypeSelect").val() == "rateOfReturn") {
+      appdata.plotRateOfReturnHistogram = true;
+    } else {
+      appdata.plotRateOfReturnHistogram = true;
+    }
+  }
   
   $("#rateMethodSelect").val("logrithmic");
   appdata.log = true;

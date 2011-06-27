@@ -13,7 +13,7 @@
     <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.5/jquery-ui.min.js"></script>
     <!-- Things I strangely control... -->
     <script src="http://jsonp.org/jquery.jsonp.js"></script>
-    <script src="http://github.com/colemickens/uiblock/raw/master/uiblock.js"></script>
+    <script src="js/uiblock/uiblock.js"></script>
     <!-- -->
     <script src="js/flot/jquery.flot.min.js"></script>
     <script src="js/jquery.dataTables.min.js"></script>
@@ -36,6 +36,10 @@
       <select name="rateMethod" id="rateMethodSelect">
         <option value="simple">simple</option>
         <option value="logrithmic">logrithmic</option>
+      </select>
+      <select name="secondaryGraphType" id="secondaryGraphTypeSelect">
+        <option value="rateOfReturn">Rate Of Returns Histogram</option>
+        <option value="MACD">MACD Plot</option>
       </select>
       <input id="showTableButton" type="button" value="See Table"/>
     </div>
